@@ -1,0 +1,24 @@
+{% extends "index.html" %}
+{% block titulo %}{{ dim.nombre }}{% endblock %}
+{% block contenido %}
+<section class="encabezado-dim dim-{{ dim.clase }}">
+  <div class="container">
+    <nav aria-label="Ruta de navegación">
+      <ol class="breadcrumb mb-2">
+        <li class="breadcrumb-item"><a href="{{ url_for('inicio') }}">Inicio</a></li>
+        <li class="breadcrumb-item">Análisis de datos</li>
+        <li class="breadcrumb-item active" aria-current="page">{{ dim.nombre }}</li>
+      </ol>
+    </nav>
+    <h1>{{ dim.nombre }}</h1>
+    <p class="lead mb-0">{{ dim.pregunta }}</p>
+  </div>
+</section>
+
+<section class="container py-5">
+  <p class="descripcion">{{ dim.descripcion }}</p>
+  <div class="vacio">
+    <p class="mb-0">Aquí se mostrarán los indicadores y gráficos de esta dimensión.</p>
+  </div>
+</section>
+{% endblock %}
