@@ -17,8 +17,16 @@
 
 <section class="container py-5">
   <p class="descripcion">{{ dim.descripcion }}</p>
+  {% if resultados %}
+  <div class="resultados">
+    {% for nombre, valor in resultados.items() %}
+    <p><strong>{{ nombre }}:</strong> {{ valor }}</p>
+    {% endfor %}
+  </div>
+  {% else %}
   <div class="vacio">
     <p class="mb-0">Aquí se mostrarán los indicadores y gráficos de esta dimensión.</p>
   </div>
+  {% endif %}
 </section>
 {% endblock %}

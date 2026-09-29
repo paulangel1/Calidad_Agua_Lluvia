@@ -1,11 +1,12 @@
 from flask import Flask, render_template
+from Dimensiones import poblacional, relacional, temporal, territorial
 
 
 
 app = Flask(__name__)
 
 NOMBRE_PROYECTO = "Calidad del agua lluvia"
-DIMENSIONES = {
+DESCRIPCION = {
     "poblacional": {
         "nombre": "Dimensión poblacional",
         "clase": "poblacional",
@@ -55,10 +56,28 @@ DIMENSIONES = {
     },
 }
 
+DIMENSIONES = {
+    "poblacional": poblacional,
+    "territorial": territorial,
+    "temporal": temporal,
+    "relacional": relacional,
+}
+
 
 @app.context_processor
 def contexto_global():
-    return {"nombre_proyecto": NOMBRE_PROYECTO, "dimensiones": DIMENSIONES}
+    return {"nombre_proyecto": NOMBRE_PROYECTO, "dimensiones": DESCRIPCION}
+
+
+def mostrar_dimension(clave):
+    modulo = DIMENSIONES[clave]
+    analizar = getattr(modulo, "analizar", None)
+    resultados = analizar() if callable(analizar) else None
+    return render_template(
+        "Dimensiones.html",
+        dim=DESCRIPCION[clave],
+        resultados=resultados,
+    )
 
 @app.route('/')
 def inicio():
@@ -67,21 +86,21 @@ def inicio():
 
 @app.route("/Analisis/poblacional")
 def dimension_poblacional():
-    return render_template("Dimensiones.html", dim=DIMENSIONES["poblacional"])
+    return mostrar_dimension("poblacional")
 
 
 @app.route("/Analisis/territorial")
 def dimension_territorial():
-    return render_template("Dimensiones.html", dim=DIMENSIONES["territorial"])
+    return mostrar_dimension("territorial")
 
 
 @app.route("/Analisis/temporal")
 def dimension_temporal():
-    return render_template("Dimensiones.html", dim=DIMENSIONES["temporal"])
+    return mostrar_dimension("temporal")
 
 @app.route("/Analisis/relacional")
 def dimension_relacional():
-    return render_template("Dimensiones.html", dim=DIMENSIONES["relacional"])
+    return mostrar_dimension("relacional")
 
 if __name__ == "__main__":
     app.run(debug=True)
