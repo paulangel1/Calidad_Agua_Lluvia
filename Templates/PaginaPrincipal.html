@@ -1,0 +1,25 @@
+{% extends "index.html" %}
+{% block titulo %}Pagina Principal  {% endblock %}
+{% block contenido %}
+<section class="portada">
+  <div class="container">
+    <h1>Calidad del agua lluvia en Colombia</h1>
+    <p class="lead">Explora la data histórica del IDEAM desde las mediciones, el territorio,
+      el tiempo y las relaciones entre variables.</p>
+  </div>
+</section>
+
+<section class="container py-5">
+  <div class="row g-4">
+    {% for d in dimensiones.values() %}
+    <div class="col-md-6">
+      <a class="dimension-enlace dim-{{ d.clase }}" href="{{ url_for(d.endpoint) }}">
+        <h2 class="h4">{{ d.nombre }}</h2>
+        <p class="fw-medium mb-1">{{ d.pregunta }}</p>
+        <p class="mb-0 texto-suave">{{ d.descripcion }}</p>
+      </a>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}
