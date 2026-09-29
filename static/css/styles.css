@@ -1,0 +1,324 @@
+:root {
+	color-scheme: light;
+	--tinta: #183832;
+	--tinta-suave: #526b64;
+	--verde: #176b58;
+	--fondo: #f4f6f1;
+	--papel: #fffefa;
+	--linea: #dce5dd;
+	--coral: #c65b42;
+	--mostaza: #ba8a27;
+	--azul: #347a91;
+	--serif: "Newsreader", Georgia, serif;
+	--sans: "Public Sans", "Segoe UI", sans-serif;
+}
+
+* {
+	box-sizing: border-box;
+}
+
+html {
+	scroll-behavior: smooth;
+}
+
+body {
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
+	background: var(--fondo);
+	color: var(--tinta);
+	font-family: var(--sans);
+	font-size: 1rem;
+	line-height: 1.65;
+}
+
+main {
+	flex: 1;
+}
+
+a {
+	color: var(--verde);
+	text-underline-offset: 0.2em;
+}
+
+a:focus-visible,
+button:focus-visible {
+	outline: 3px solid var(--mostaza);
+	outline-offset: 3px;
+}
+
+.barra {
+	min-height: 76px;
+	background: var(--papel);
+	border-bottom: 1px solid var(--linea);
+	--bs-navbar-color: var(--tinta-suave);
+	--bs-navbar-hover-color: var(--verde);
+	--bs-navbar-active-color: var(--tinta);
+	--bs-navbar-brand-color: var(--tinta);
+	--bs-navbar-brand-hover-color: var(--verde);
+	--bs-navbar-toggler-border-color: var(--linea);
+	--bs-navbar-toggler-icon-bg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3E%3Cpath stroke='%23183832' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+}
+
+.marca {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.7rem;
+	max-width: min(70vw, 420px);
+	font-family: var(--serif);
+	font-size: 1.35rem;
+	font-weight: 600;
+	line-height: 1.1;
+}
+
+.marca::before {
+	width: 13px;
+	height: 17px;
+	flex: 0 0 13px;
+	background: var(--verde);
+	border-radius: 70% 15% 65% 50%;
+	content: "";
+	transform: rotate(35deg);
+}
+
+.barra .nav-link {
+	padding: 0.7rem 1rem;
+	font-size: 0.94rem;
+	font-weight: 600;
+}
+
+.barra .nav-link.active {
+	color: var(--verde);
+}
+
+.dropdown-menu {
+	min-width: 245px;
+	padding: 0.45rem;
+	border: 1px solid var(--linea);
+	border-radius: 6px;
+	box-shadow: 0 14px 32px rgb(24 56 50 / 10%);
+}
+
+.dropdown-item {
+	padding: 0.65rem 0.8rem;
+	border-radius: 4px;
+	color: var(--tinta);
+}
+
+.dropdown-item.active,
+.dropdown-item:active {
+	background: var(--verde);
+	color: white;
+}
+
+.portada {
+	position: relative;
+	overflow: hidden;
+	padding: 6.5rem 0 6rem;
+	background-color: #183832;
+	background-image: repeating-linear-gradient(132deg, transparent 0 34px, rgb(255 255 255 / 5%) 35px 36px);
+	color: white;
+}
+
+.portada::after {
+	position: absolute;
+	right: max(5vw, calc((100vw - 1140px) / 2));
+	bottom: -78px;
+	width: 240px;
+	height: 240px;
+	border: 1px solid rgb(255 255 255 / 17%);
+	border-radius: 50%;
+	box-shadow: 0 0 0 28px rgb(255 255 255 / 4%), 0 0 0 58px rgb(255 255 255 / 3%);
+	content: "";
+	pointer-events: none;
+}
+
+.portada .container {
+	position: relative;
+	z-index: 1;
+}
+
+.portada h1,
+.encabezado-dim h1 {
+	max-width: 790px;
+	margin: 0 0 1.2rem;
+	font-family: var(--serif);
+	font-size: 3.4rem;
+	font-weight: 500;
+	line-height: 1.06;
+}
+
+.portada .lead {
+	max-width: 650px;
+	margin: 0;
+	color: rgb(255 255 255 / 82%);
+	font-size: 1.15rem;
+}
+
+.dimension-enlace {
+	position: relative;
+	display: block;
+	height: 100%;
+	min-height: 218px;
+	padding: 1.65rem 1.7rem 1.5rem;
+	overflow: hidden;
+	background: var(--papel);
+	border: 1px solid var(--linea);
+	border-top: 4px solid var(--acento, var(--verde));
+	color: var(--tinta);
+	text-decoration: none;
+	transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+
+.dimension-enlace:hover {
+	border-color: var(--acento, var(--verde));
+	box-shadow: 0 12px 26px rgb(24 56 50 / 9%);
+	color: var(--tinta);
+	transform: translateY(-3px);
+}
+
+.dimension-enlace h2 {
+	margin: 0 0 1.1rem;
+	font-family: var(--serif);
+	font-size: 1.65rem;
+	font-weight: 600;
+	line-height: 1.2;
+}
+
+.dimension-enlace .fw-medium {
+	color: var(--acento, var(--verde));
+}
+
+.texto-suave,
+.descripcion {
+	color: var(--tinta-suave);
+}
+
+.dim-poblacional {
+	--acento: var(--coral);
+}
+
+.dim-territorial {
+	--acento: var(--verde);
+}
+
+.dim-temporal {
+	--acento: var(--mostaza);
+}
+
+.dim-relacional {
+	--acento: var(--azul);
+}
+
+.encabezado-dim {
+	padding: 2.1rem 0 3.4rem;
+	background-color: color-mix(in srgb, var(--acento, var(--verde)) 10%, white);
+	border-bottom: 1px solid color-mix(in srgb, var(--acento, var(--verde)) 25%, white);
+}
+
+.encabezado-dim h1 {
+	max-width: 900px;
+	margin-bottom: 0.7rem;
+	font-size: 2.8rem;
+}
+
+.encabezado-dim .lead {
+	color: var(--tinta-suave);
+}
+
+.breadcrumb {
+	font-size: 0.88rem;
+}
+
+.breadcrumb a {
+	color: var(--tinta-suave);
+}
+
+.breadcrumb-item.active {
+	color: var(--tinta);
+}
+
+.descripcion {
+	max-width: 760px;
+	margin-bottom: 2rem;
+	font-size: 1.1rem;
+}
+
+.vacio {
+	min-height: 230px;
+	display: grid;
+	place-items: center;
+	padding: 2rem;
+	background-color: rgb(255 254 250 / 75%);
+	background-image: linear-gradient(var(--linea) 1px, transparent 1px), linear-gradient(90deg, var(--linea) 1px, transparent 1px);
+	background-size: 32px 32px;
+	border: 1px dashed #bdccc0;
+	color: var(--tinta-suave);
+	text-align: center;
+}
+
+.vacio p {
+	max-width: 380px;
+	margin: 0;
+	padding: 0.9rem 1.2rem;
+	background: var(--papel);
+	border: 1px solid var(--linea);
+}
+
+.pie {
+	padding: 1.35rem 0;
+	background: #e8eee8;
+	border-top: 1px solid var(--linea);
+	color: var(--tinta-suave);
+	font-size: 0.9rem;
+}
+
+.pie a {
+	color: var(--tinta);
+	font-weight: 600;
+}
+
+@media (max-width: 767.98px) {
+	.barra {
+		min-height: 68px;
+	}
+
+	.marca {
+		font-size: 1.2rem;
+	}
+
+	.portada {
+		padding: 4.2rem 0 4rem;
+	}
+
+	.portada h1 {
+		max-width: 590px;
+		font-size: 2.55rem;
+	}
+
+	.portada .lead {
+		font-size: 1.05rem;
+	}
+
+	.dimension-enlace {
+		min-height: 0;
+		padding: 1.35rem;
+	}
+
+	.encabezado-dim {
+		padding: 1.5rem 0 2.4rem;
+	}
+
+	.encabezado-dim h1 {
+		font-size: 2.25rem;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		scroll-behavior: auto !important;
+		transition-duration: 0.01ms !important;
+	}
+}
