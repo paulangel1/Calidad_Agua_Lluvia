@@ -1,0 +1,117 @@
+<style>
+.tmp-dim section,.tmp-dim .tmp-card{background:var(--papel);border:1px solid var(--linea);border-radius:6px;padding:1.2rem 1.4rem;margin-bottom:1.4rem}
+.tmp-dim h2{margin:0 0 .7rem;font-family:var(--serif);font-size:1.45rem;font-weight:600;color:var(--tinta)}
+.tmp-dim h3{margin:0 0 .6rem;font-family:var(--serif);font-size:1.2rem;font-weight:600;color:var(--tinta)}
+.tmp-dim table{border-collapse:collapse;width:100%;font-size:.92rem}
+.tmp-dim td,.tmp-dim th{text-align:left;padding:.4rem .55rem;border-bottom:1px solid var(--linea);vertical-align:top}
+.tmp-dim .filtros{display:flex;flex-wrap:wrap;gap:1rem;align-items:end}
+.tmp-dim .filtros label{display:flex;flex-direction:column;font-size:.85rem;font-weight:600;gap:.25rem}
+.tmp-dim select{padding:.45rem .6rem;border:1px solid var(--linea);border-radius:4px;background:#fff;font-size:.95rem;color:var(--tinta)}
+.tmp-dim .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:1rem;margin-bottom:1.4rem}
+.tmp-dim .kpi{background:var(--papel);border:1px solid var(--linea);border-top:4px solid var(--mostaza);padding:1rem 1.2rem}
+.tmp-dim .kpi .v{font-family:var(--serif);font-size:2.1rem;font-weight:600;color:var(--tinta);line-height:1.1}
+.tmp-dim .kpi .t{font-size:.85rem;color:var(--tinta-suave)}
+.tmp-dim .grafica{width:100%;height:380px}
+.tmp-dim .interp{background:#f7f1e3;border-left:4px solid var(--mostaza);padding:.7rem 1rem;font-size:.93rem;margin-top:.6rem}
+.tmp-dim .hallazgo dl{margin:0;display:grid;grid-template-columns:130px 1fr;gap:.4rem .9rem;font-size:.92rem}
+.tmp-dim .hallazgo dt{font-weight:700;color:var(--verde)}
+.tmp-dim .hallazgo dd{margin:0}
+.tmp-dim .aviso{color:#8a4b00;background:#fff4e5;border:1px solid #f0d3a6;padding:.7rem 1rem;border-radius:4px;margin-bottom:1.4rem}
+.tmp-dim small{color:var(--tinta-suave)}
+@media (max-width:640px){.tmp-dim .hallazgo dl{grid-template-columns:1fr}}
+</style>
+<div class="tmp-dim">
+<div>
+
+<section>
+  <h2>Descripción de las variables utilizadas</h2>
+  <p>Conjunto de datos: <b>El conjunto es el Data Histórica de Calidad de Agua Lluvia</b> (IDEAM). Cada registro es una medición
+     de una propiedad en una muestra de lluvia. Periodo: Va desde 08/1999 hasta 05/2024.</p>
+  <table>
+    <tr><th>Variable</th><th>Uso en el análisis</th></tr>
+    <tr><td>FECHA</td><td>Es la base de todo el análisis. Se derivan año, trimestre y mes.</td></tr>
+    <tr><td>PROPIEDAD OBSERVADA</td><td>El filtro y variable de la tendencia (pH, conductividad, nitrato, sulfato, temperatura, etc.).</td></tr>
+    <tr><td>RESULTADO</td><td>El valor medido, se usa la mediana anual. Valores "&lt;" (bajo límite de detección) y pH fuera de 0–14 se excluyen de la tendencia.</td></tr>
+    <tr><td>DEPARTAMENTO</td><td>El filtro geográfico.</td></tr>
+    <tr><td>NOMBRE DEL PUNTO DE MONITOREO</td><td>La cuenta de puntos activos por periodo.</td></tr>
+    <tr><td>CODIGO MUESTRA</td><td>La cuenta de muestras únicas.</td></tr>
+  </table>
+</section>
+
+<section>
+  <h2>Filtros Interactivos</h2>
+  <form method="get" class="filtros">
+    <label>Año desde
+      <select name="desde" onchange="this.form.submit()">{% for a in range(anio_min, anio_max + 1) %}<option value="{{a}}" {{ 'selected' if a == sel.desde }}>{{a}}</option>{% endfor %}</select></label>
+    <label>Año hasta
+      <select name="hasta" onchange="this.form.submit()">{% for a in range(anio_min, anio_max + 1) %}<option value="{{a}}" {{ 'selected' if a == sel.hasta }}>{{a}}</option>{% endfor %}</select></label>
+    <label>Departamento
+      <select name="depto" onchange="this.form.submit()"><option value="">Todos</option>{% for d in deptos %}<option {{ 'selected' if d == sel.depto }}>{{d}}</option>{% endfor %}</select></label>
+    <label>Propiedad observada
+      <select name="propiedad" onchange="this.form.submit()"><option value="">Todas</option>{% for p in propiedades %}<option {{ 'selected' if p == sel.propiedad }}>{{p}}</option>{% endfor %}</select></label>
+    <label>Agrupar evolución por
+      <select name="gran" onchange="this.form.submit()">
+        <option value="anio" {{ 'selected' if sel.gran == 'anio' }}>Año</option>
+        <option value="trimestre" {{ 'selected' if sel.gran == 'trimestre' }}>Trimestre</option>
+        <option value="mes" {{ 'selected' if sel.gran == 'mes' }}>Mes</option></select></label>
+  </form>
+  <p><small>Con "Todas" en propiedad, la gráfica 3 muestra pH por defecto.</small></p>
+</section>
+
+{% if vacio %}<div class="aviso" style="display:block">No hay datos con los filtros seleccionados. Ajusta los filtros.</div>
+{% else %}
+
+<div class="kpis">
+  <div class="kpi"><div class="v" id="k1">{{ "{:,}".format(kpis.total).replace(",", ".") }}</div><div class="t">Registros totales (mediciones)<br>{{ "{:,}".format(kpis.muestras).replace(",", ".") }} muestras únicas</div></div>
+  <div class="kpi"><div class="v" id="k2">{{ kpis.anio_pico }}</div><div class="t">Año con más registros<br>{{ "{:,}".format(kpis.registros_pico).replace(",", ".") }} registros</div></div>
+  <div class="kpi"><div class="v" id="k3">{{ "N/D" if kpis.variacion is none else ("+" if kpis.variacion > 0 else "") ~ kpis.variacion ~ " %" }}</div><div class="t">Cambio del promedio anual: segunda mitad vs. primera mitad del rango</div></div>
+</div>
+
+<div class="tmp-card">
+  <h2>1. Evolución de los registros y de los puntos de monitoreo</h2>
+  <div id="g1" class="grafica"></div>
+  <div class="interp"><b>Interpretación:</b> Cabe aclarar que todas las interpretaciones las explico con todos los datos, sin usar ningún filtro. Sabiendo esto se puede observar que el volumen de registros se dispara en 2000 y 2005 y la caída en la cantidad de mediciones registradas no es un hecho aislado, sino que está directamente vinculada a la reducción progresiva de puntos de monitoreo activos. Al haber menos estaciones reportando información con el paso de los años, el volumen de datos recolectados se ha reducido severamente desde 2012.
+  Y los datos de 2024 solo llegan hasta el 2 de mayo.</div>
+</div>
+
+<div class="tmp-card">
+  <h2>2. Estacionalidad: Registros por año y mes</h2>
+  <div id="g2" class="grafica"></div>
+  <div class="interp"><b>Interpretación:</b> Se ve cuándo se tomaban los datos y cómo ha cambiado la densidad de recolección en el tiempo. Los colores más intensos se repiten en marzo–mayo y en octubre–noviembre,
+  mientras que enero y julio–agosto son los meses más bajos.</div>
+</div>
+
+<div class="tmp-card">
+  <h2>3. Tendencia anual del resultado - mediana — <span>{{ datos.tendencia.propiedad }}</span></h2>
+  <div id="g3" class="grafica"></div>
+  <div class="interp"><b>Interpretación:</b> El pH mediano se mantiene cerca de 5,5–5,9 hasta 2011 y baja hacia 4,2–5,0
+  en los años recientes. Como los valores más recientes provienen de muy pocas estaciones de muestreo, puede aumentar la sensibilidad de la mediana a la ubicación específica de los pocos puntos activos restantes.</div>
+</div>
+
+{% endif %}
+
+
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+{% if not vacio %}
+<script>
+(function () {
+  const d = {{ datos|tojson }};
+  const cfg = { responsive: true, displaylogo: false };
+  const e = d.evolucion;
+  Plotly.newPlot("g1", [
+    { x: e.x, y: e.registros, type: "bar", name: "Registros", marker: { color: "#176b58" } },
+    { x: e.x, y: e.puntos, type: "scatter", mode: "lines+markers", name: "Puntos activos", yaxis: "y2", line: { color: "#ba8a27" } }
+  ], { margin: { t: 10, r: 50, l: 55, b: 60 }, legend: { orientation: "h", y: 1.12 },
+       xaxis: { title: "Periodo", type: "category", tickangle: -45, nticks: 20 }, yaxis: { title: "Registros" },
+       yaxis2: { title: "Puntos activos", overlaying: "y", side: "right", rangemode: "tozero" } }, cfg);
+  const h = d.heatmap;
+  Plotly.newPlot("g2", [{ z: h.z, x: h.x, y: h.y, type: "heatmap", colorscale: [[0,"#fffefa"],[1,"#ba8a27"]], colorbar: { title: "Registros" },
+    hovertemplate: "%{y} %{x}: %{z} registros<extra></extra>" }],
+    { margin: { t: 10, r: 10, l: 55, b: 40 }, yaxis: { type: "category", autorange: "reversed" } }, cfg);
+  const t = d.tendencia;
+  Plotly.newPlot("g3", [{ x: t.x, y: t.mediana, type: "scatter", mode: "lines+markers", line: { color: "#176b58" },
+    customdata: t.n, connectgaps: false, hovertemplate: "%{x}<br>Mediana: %{y}<br>Mediciones: %{customdata}<extra></extra>" }],
+    { margin: { t: 10, r: 10, l: 55, b: 45 }, xaxis: { title: "Año", dtick: 2 }, yaxis: { title: "Mediana " + t.propiedad } }, cfg);
+})();
+</script>
+{% endif %}
