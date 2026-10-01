@@ -1,0 +1,273 @@
+<style>
+  .pob { --tinta:#1f3a30; --suave:#5b6f66; --linea:#cfd9d3; --panel:#e6ede9; --acento:#2f6f5e; }
+  .pob h3.sec { font-size:1.35rem; color:var(--tinta); margin:2.6rem 0 1rem; padding-bottom:.4rem; border-bottom:1px solid var(--linea); }
+  .pob h3.sec small { font-size:.9rem; color:var(--suave); font-weight:400; margin-left:.4rem; }
+  .pob .nota-sec { color:var(--suave); font-size:.92rem; margin:-.4rem 0 1rem; }
+  .pob table.dist { font-size:.92rem; }
+  .pob table.dist th { color:var(--suave); font-weight:600; font-size:.78rem; text-transform:uppercase; letter-spacing:.04em; }
+
+  .pob .sintesis { margin:0; }
+  .pob .sintesis .item { display:grid; grid-template-columns:240px 1fr; gap:1.5rem; padding:.9rem 0; border-bottom:1px solid var(--linea); }
+  .pob .sintesis .item:first-child { padding-top:0; }
+  .pob .sintesis dt { color:var(--tinta); font-weight:600; }
+  .pob .sintesis dd { margin:0; color:#34463d; }
+  @media (max-width:768px) { .pob .sintesis .item { grid-template-columns:1fr; gap:.25rem; } }
+
+  .pob .tabla-vars { background:#fff; border:1px solid var(--linea); border-radius:10px; overflow:hidden; box-shadow:0 1px 3px rgba(31,58,48,.05); }
+  .pob .tabla-vars .scroll { overflow-x:auto; }
+  .pob .tabla-vars table { width:100%; border-collapse:collapse; font-size:.92rem; min-width:640px; }
+  .pob .tabla-vars thead th { background:var(--panel); color:var(--tinta); text-align:left; padding:.8rem 1rem; font-size:.78rem; text-transform:uppercase; letter-spacing:.05em; border-bottom:1px solid var(--linea); }
+  .pob .tabla-vars tbody td { padding:.95rem 1rem; vertical-align:top; color:#34463d; border-bottom:1px solid var(--linea); }
+  .pob .tabla-vars tbody tr:last-child td { border-bottom:0; }
+  .pob .tabla-vars tbody tr:hover td { background:#f6faf8; }
+  .pob .tabla-vars tbody td:first-child { font-weight:600; color:var(--tinta); width:24%; }
+  .pob .tabla-vars .tipo { color:var(--suave); width:15%; }
+
+  .pob .panel-filtros { background:var(--panel); border:1px solid var(--linea); border-radius:6px; padding:1.4rem 1.5rem; margin:2.6rem 0 0; }
+  .pob .panel-filtros h3 { font-size:1.15rem; margin:0 0 .3rem; color:var(--tinta); }
+  .pob .panel-filtros p { margin:0 0 1rem; color:var(--suave); font-size:.9rem; }
+  .pob .activo { margin:1.4rem 0 0; font-size:.92rem; color:var(--suave); }
+  .pob .activo strong { color:var(--tinta); }
+
+  .pob .franja { display:flex; flex-wrap:wrap; border-top:1px solid var(--linea); border-bottom:1px solid var(--linea); }
+  .pob .franja > div { flex:1 1 200px; padding:1rem 1.2rem 1rem 0; }
+  .pob .franja .et { font-size:.75rem; text-transform:uppercase; letter-spacing:.05em; color:var(--suave); }
+  .pob .franja .val { font-size:1.55rem; color:var(--tinta); line-height:1.2; }
+  .pob .franja .det { font-size:.85rem; color:var(--suave); margin-top:.2rem; }
+  .pob .barra { display:inline-block; height:6px; background:var(--acento); border-radius:3px; vertical-align:middle; }
+
+  .pob figure { margin:0; }
+  .pob figure figcaption { font-size:.88rem; color:var(--suave); margin-top:.6rem; }
+  .pob figure img { width:100%; border:1px solid var(--linea); border-radius:4px; background:#fff; }
+
+  .pob details.con { border-top:1px solid var(--linea); padding:.9rem 0; }
+  .pob details.con:first-of-type { border-top:0; padding-top:.2rem; }
+  .pob details.con:last-of-type { border-bottom:1px solid var(--linea); }
+  .pob details.con summary { cursor:pointer; color:var(--tinta); font-weight:600; }
+  .pob details.con dl { margin:1rem 0 0; }
+  .pob details.con dt { color:var(--suave); font-weight:600; font-size:.82rem; text-transform:uppercase; letter-spacing:.03em; }
+  .pob details.con dd { margin-bottom:.4rem; }
+  #filtros { scroll-margin-top: 90px; }
+</style>
+
+<div class="resultados pob">
+
+  <h3 class="sec">1. Respuesta a la pregunta de análisis</h3>
+  <p class="nota-sec">Resumen sobre la población completa</p>
+  <dl class="sintesis">
+    {% for s in resultados.sintesis %}
+    <div class="item">
+      <dt>{{ s.punto }}</dt>
+      <dd>{{ s.respuesta }}</dd>
+    </div>
+    {% endfor %}
+  </dl>
+
+  <h3 class="sec">2. Variables utilizadas</h3>
+  <div class="tabla-vars">
+    <div class="scroll">
+      <table>
+        <thead>
+          <tr><th>Variable</th><th>Tipo</th><th>Qué representa</th><th>Uso en el tablero</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>PROPIEDAD OBSERVADA</td>
+            <td class="tipo">Categórica</td>
+            <td>Parámetro medido en la muestra de agua lluvia: pH, conductividad eléctrica, nitrato, sulfato, temperatura, demanda química de oxígeno y fósforo total.</td>
+            <td>Indicador 1, primera gráfica y primer filtro.</td>
+          </tr>
+          <tr>
+            <td>NOMBRE DEL PUNTO DE MONITOREO</td>
+            <td class="tipo">Categórica</td>
+            <td>Estación del IDEAM donde se recolectó la muestra.</td>
+            <td>Indicador 2, segunda gráfica y segundo filtro.</td>
+          </tr>
+          <tr>
+            <td>RESULTADO</td>
+            <td class="tipo">Numérica, con valores censurados</td>
+            <td>Valor medido. Algunos vienen con el prefijo &lt; o &gt;, lo que indica que quedaron fuera del límite de detección del equipo.</td>
+            <td>Indicador 3 y tercera gráfica (proporción de resultados censurados).</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <h3 class="sec">3. Perfil general de la población</h3>
+  <div class="franja">
+    <div>
+      <div class="et">Registros</div>
+      <div class="val">{{ "{:,}".format(resultados.perfil.registros).replace(",", ".") }}</div>
+      <div class="det">Cada registro es una medición de una propiedad en una muestra de agua lluvia.</div>
+    </div>
+    <div>
+      <div class="et">Propiedades medidas</div>
+      <div class="val">{{ resultados.perfil.propiedades }}</div>
+      <div class="det">Parámetros diferentes que se miden (pH, conductividad, nitrato...). Cuenta tipos, no mediciones.</div>
+    </div>
+    <div>
+      <div class="et">Puntos de monitoreo</div>
+      <div class="val">{{ resultados.perfil.puntos }}</div>
+      <div class="det">Estaciones del IDEAM donde se recolecta el agua lluvia.</div>
+    </div>
+    <div>
+      <div class="et">Departamentos</div>
+      <div class="val">{{ resultados.perfil.departamentos }}</div>
+      <div class="det">Departamentos con al menos un punto de monitoreo.</div>
+    </div>
+  </div>
+
+  <div class="panel-filtros" id="filtros">
+    <h3>Filtros interactivos</h3>
+    <p>Los filtros cambian únicamente la sección "Resultados". Los hallazgos del final se calculan siempre sobre la población completa.</p>
+    <form method="get" action="{{ url_for('dimension_poblacional') }}#filtros" class="row g-3 align-items-end">
+      <div class="col-md-5">
+        <label class="form-label small">Propiedad observada</label>
+        <select name="propiedad" class="form-select" onchange="this.form.submit()">
+          <option value="">Todas las propiedades</option>
+          {% for p in resultados.propiedades_disponibles %}
+          <option value="{{ p }}" {% if p == resultados.propiedad_seleccionada %}selected{% endif %}>{{ p }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-5">
+        <label class="form-label small">Punto de monitoreo</label>
+        <select name="punto" class="form-select" onchange="this.form.submit()">
+          <option value="">Todos los puntos</option>
+          {% for pt in resultados.puntos_disponibles %}
+          <option value="{{ pt }}" {% if pt == resultados.punto_seleccionada %}selected{% endif %}>{{ pt }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-2">
+        <a href="{{ url_for('dimension_poblacional') }}#filtros" class="btn btn-outline-secondary w-100">Limpiar</a>
+      </div>
+    </form>
+  </div>
+
+  <h3 class="sec">4. Resultados <small>según los filtros aplicados</small></h3>
+  <p class="activo">
+    Mostrando:
+    <strong>{{ resultados.propiedad_seleccionada or "todas las propiedades" }}</strong> ·
+    <strong>{{ resultados.punto_seleccionada or "todos los puntos" }}</strong>
+  </p>
+
+  {% if resultados.sin_datos %}
+  <div class="alert alert-warning mt-3">No hay registros para esta combinación de filtros. Prueba otra o pulsa "Limpiar".</div>
+  {% else %}
+
+  {% set top_prop = resultados.indicador_propiedad.items()|list|first %}
+  {% set min_prop = resultados.indicador_propiedad.items()|list|last %}
+  {% set top_punto = resultados.indicador_puntos.items()|list|first %}
+  {% set cens = resultados.indicador_censura.get('Censurado (< o >)', 0) %}
+  {% set max_prop = resultados.indicador_propiedad.values()|list|first %}
+  {% set max_punto = resultados.indicador_puntos.values()|list|first %}
+
+  <h4 class="mt-4 mb-3" style="font-size:1.05rem;color:var(--tinta);">Indicadores</h4>
+  <div class="franja">
+    <div>
+      <div class="et">Registros</div>
+      <div class="val">{{ "{:,}".format(resultados.total_registros).replace(",", ".") }}</div>
+      <div class="det">con los filtros actuales</div>
+    </div>
+    <div>
+      <div class="et">1 · Propiedad predominante</div>
+      <div class="val">{{ top_prop[0] }}</div>
+      <div class="det">{{ top_prop[1] }}% de los registros. Minoritaria: {{ min_prop[0] }} ({{ min_prop[1] }}%)</div>
+    </div>
+    <div>
+      <div class="et">2 · Punto con más registros</div>
+      <div class="val" style="font-size:1.05rem;">{{ top_punto[0] }}</div>
+      <div class="det">{{ top_punto[1] }} registros</div>
+    </div>
+    <div>
+      <div class="et">3 · Resultados censurados</div>
+      <div class="val">{{ cens }}%</div>
+      <div class="det">valores con &lt; o &gt;</div>
+    </div>
+  </div>
+
+  <div class="row g-4 mt-1">
+    <div class="col-lg-6">
+      <table class="table table-sm align-middle dist">
+        <thead><tr><th>Propiedad observada</th><th class="text-end">%</th><th style="width:35%"></th></tr></thead>
+        <tbody>
+          {% for k, v in resultados.indicador_propiedad.items() %}
+          <tr>
+            <td>{{ k }}</td><td class="text-end">{{ v }}</td>
+            <td><span class="barra" style="width: {{ (v / max_prop * 100)|round(1) }}%"></span></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="col-lg-6">
+      <table class="table table-sm align-middle dist">
+        <thead><tr><th>Punto de monitoreo (top 10)</th><th class="text-end">Registros</th><th style="width:30%"></th></tr></thead>
+        <tbody>
+          {% for k, v in resultados.indicador_puntos.items() %}
+          <tr>
+            <td>{{ k }}</td><td class="text-end">{{ v }}</td>
+            <td><span class="barra" style="width: {{ (v / max_punto * 100)|round(1) }}%"></span></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <h4 class="mt-4 mb-3" style="font-size:1.05rem;color:var(--tinta);">Visualizaciones</h4>
+  <div class="row g-4">
+    <div class="col-lg-4">
+      <figure>
+        <img src="{{ url_for('static', filename=resultados.imagenes.propiedad, v=resultados.version) }}" alt="Distribución por propiedad observada">
+        <figcaption><strong>Interpretación (población completa):</strong> el pH y la conductividad eléctrica concentran casi tres cuartas partes de las mediciones; propiedades como el fósforo total casi no se monitorean.</figcaption>
+      </figure>
+    </div>
+    <div class="col-lg-4">
+      <figure>
+        <img src="{{ url_for('static', filename=resultados.imagenes.puntos, v=resultados.version) }}" alt="Top de puntos de monitoreo">
+        <figcaption><strong>Interpretación (población completa):</strong> la vigilancia está concentrada: pocos puntos acumulan una parte desproporcionada de las muestras.</figcaption>
+      </figure>
+    </div>
+    <div class="col-lg-4">
+      <figure>
+        <img src="{{ url_for('static', filename=resultados.imagenes.censura, v=resultados.version) }}" alt="Resultados directos y censurados">
+        <figcaption><strong>Interpretación (población completa):</strong> cerca del 6% de los resultados son valores censurados por el límite de detección del equipo.</figcaption>
+      </figure>
+    </div>
+  </div>
+  {% endif %}
+
+  <h3 class="sec">5. Hallazgos sobre la población completa</h3>
+
+  <h4 class="mb-3" style="font-size:1.05rem;color:var(--tinta);">Conocimientos evidentes</h4>
+  {% for c in resultados.conocimientos_evidentes %}
+  <details class="con">
+    <summary>Conocimiento {{ loop.index }}: {{ c.pregunta }}</summary>
+    <dl class="row">
+      <dt class="col-sm-3">Pregunta</dt><dd class="col-sm-9">{{ c.pregunta }}</dd>
+      <dt class="col-sm-3">Variables</dt><dd class="col-sm-9">{{ c.variables }}</dd>
+      <dt class="col-sm-3">Procedimiento</dt><dd class="col-sm-9">{{ c.procedimiento }}</dd>
+      <dt class="col-sm-3">Evidencia</dt><dd class="col-sm-9">{{ c.evidencia }}</dd>
+      <dt class="col-sm-3">Hallazgo</dt><dd class="col-sm-9">{{ c.hallazgo }}</dd>
+      <dt class="col-sm-3">Interpretación</dt><dd class="col-sm-9">{{ c.interpretacion }}</dd>
+      <dt class="col-sm-3">Utilidad</dt><dd class="col-sm-9">{{ c.utilidad }}</dd>
+      <dt class="col-sm-3">Limitación</dt><dd class="col-sm-9">{{ c.limitacion }}</dd>
+    </dl>
+  </details>
+  {% endfor %}
+
+  <div class="row g-4 mt-2">
+    <div class="col-lg-6">
+      <h4 style="font-size:1.05rem;color:var(--tinta);">Limitación del análisis</h4>
+      <p>{{ resultados.limitacion_general }}</p>
+    </div>
+    <div class="col-lg-6">
+      <h4 style="font-size:1.05rem;color:var(--tinta);">Decisión sustentada en los datos</h4>
+      <p>{{ resultados.decision_sustentada }}</p>
+    </div>
+  </div>
+
+</div>
