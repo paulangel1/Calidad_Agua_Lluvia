@@ -15,6 +15,9 @@
   </div>
 </section>
 
+{% if dim.clase == "territorial" %}
+  {% include "Dimension_Territorial.html" %}
+{% else %}
 <section class="container py-5">
   <p class="descripcion">{{ dim.descripcion }}</p>
   {% if resultados %}
@@ -29,4 +32,5 @@
   </div>
   {% endif %}
 </section>
+{% endif %}
 {% endblock %}
