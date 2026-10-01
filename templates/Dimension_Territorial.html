@@ -1,0 +1,482 @@
+{% set datos = resultados %}
+{% set sin_datos = datos.sin_datos %}
+{% set niveles = datos.niveles %}
+{% set indicadores = datos.indicadores %}
+{% set aviso_niveles = datos.aviso_niveles %}
+{% set territorio_seleccionado = datos.territorio_seleccionado %}
+{% set total_registros_consulta = datos.total_registros_consulta %}
+{% set total_registros = datos.total_registros %}
+{% set indicador_seleccionado = datos.indicador_seleccionado %}
+{% set detalle = datos.detalle %}
+{% set total_muestras = datos.total_muestras %}
+{% set nivel_seleccionado = datos.nivel_seleccionado %}
+{% set total_territorios = datos.total_territorios %}
+{% set concentracion_cantidad = datos.concentracion_cantidad %}
+{% set concentracion_top = datos.concentracion_top %}
+{% set resultados = datos.resultados %}
+{% set mayor = datos.mayor %}
+{% set menor = datos.menor %}
+{% set diferencia = datos.diferencia %}
+{% set unidad = datos.unidad %}
+{% set graficos_indicadores = datos.graficos_indicadores %}
+{% set histograma = datos.histograma %}
+{% set registros_filtro = datos.registros_filtro %}
+{% set comparacion_unidades_compatible = datos.comparacion_unidades_compatible %}
+{% set comparacion_resultados = datos.comparacion_resultados %}
+
+<div class="territorial">
+	<div class="container">
+		{% if sin_datos %}
+		<section class="territorial-tarjeta territorial-vacio" role="status">
+			<h2>No hay datos territoriales para mostrar</h2>
+			<p class="mb-0">Verifica que el archivo de datos tenga columnas de territorio e indicador.</p>
+		</section>
+		{% else %}
+		<section class="territorial-filtros" aria-labelledby="territorial-filtros-titulo">
+			<h2 id="territorial-filtros-titulo">Buscar y filtrar mediciones</h2>
+			<p class="territorial-subtitulo">Elige un nivel territorial, un territorio y, si quieres, una propiedad observada. Los resultados y gráficos se actualizarán en esta página.</p>
+			<div class="territorial-controles">
+				<label for="filtro-nivel">Nivel territorial
+					<select id="filtro-nivel">
+						{% for opcion in niveles %}
+						<option value="{{ opcion }}">{{ opcion }}</option>
+						{% endfor %}
+					</select>
+				</label>
+				<label for="filtro-territorio">Territorio
+					<select id="filtro-territorio">
+						<option value="">Todos</option>
+					</select>
+				</label>
+				<label for="filtro-indicador">Propiedad observada
+					<select id="filtro-indicador">
+						<option value="">Todas</option>
+						{% for opcion in indicadores %}
+						<option value="{{ opcion }}">{{ opcion }}</option>
+						{% endfor %}
+					</select>
+				</label>
+				<label for="filtro-busqueda">Buscar texto
+					<input id="filtro-busqueda" type="search" placeholder="Municipio, indicador o muestra">
+				</label>
+				<button class="territorial-boton" id="aplicar-filtros" type="button">Aplicar filtros</button>
+			</div>
+			<p id="resumen-filtros" class="territorial-lectura" role="status" aria-live="polite"></p>
+		</section>
+
+		{% if territorio_seleccionado %}
+		<details class="territorial-contexto">
+			<summary>Ver distribución general de todos los territorios para comparar</summary>
+		{% endif %}
+
+		<section class="territorial-kpis" aria-label="Indicadores principales">
+			<div class="territorial-kpi">
+				<span>Registros analizados</span>
+				<strong>{% if territorio_seleccionado %}{{ "{:,}".format(total_registros_consulta).replace(",", ".") }}{% else %}{{ "{:,}".format(total_registros).replace(",", ".") }}{% endif %}</strong>
+				<small>{% if territorio_seleccionado %}{{ territorio_seleccionado }}{% elif indicador_seleccionado %}Indicador: {{ indicador_seleccionado }}{% else %}Todos los indicadores{% endif %}</small>
+			</div>
+			<div class="territorial-kpi">
+				<span>Muestras únicas</span>
+				<strong>{% if territorio_seleccionado %}{{ "{:,}".format(detalle.muestras).replace(",", ".") }}{% else %}{{ "{:,}".format(total_muestras).replace(",", ".") }}{% endif %}</strong>
+				<small>Identificadas por código de muestra</small>
+			</div>
+			<div class="territorial-kpi">
+				<span>{{ nivel_seleccionado }}s analizados</span>
+				<strong>{% if territorio_seleccionado %}1{% else %}{{ total_territorios }}{% endif %}</strong>
+				<small>{% if territorio_seleccionado %}{{ territorio_seleccionado }}{% else %}Con al menos un registro{% endif %}</small>
+			</div>
+			<div class="territorial-kpi">
+				<span>{% if territorio_seleccionado %}Participación del territorio{% else %}Concentración de los primeros {{ concentracion_cantidad }}{% endif %}</span>
+				<strong>{% if territorio_seleccionado %}{{ "%.1f"|format(detalle.participacion) }}%{% else %}{{ "%.1f"|format(concentracion_top) }}%{% endif %}</strong>
+				<small>Participación en los registros generales</small>
+			</div>
+		</section>
+
+		<div class="territorial-grid">
+			<section class="territorial-tarjeta" aria-labelledby="territorial-distribucion">
+				<h2 id="territorial-distribucion">Distribución por {{ nivel_seleccionado|lower }}</h2>
+				<p class="territorial-subtitulo">Distribución general para comparar territorios; la consulta individual aparece más abajo.</p>
+				<div class="territorial-barras" role="img" aria-label="Barras comparativas de los diez territorios con más registros">
+					{% for fila in resultados[:10] %}
+					<div class="territorial-barra-fila">
+						<span class="territorial-barra-nombre" title="{{ fila.territorio }}">{{ fila.territorio }}</span>
+						<div class="territorial-barra-fondo" aria-hidden="true">
+							<div class="territorial-barra-valor" style="--territorial-ancho: {{ '%.2f'|format(fila.barra) }}%"></div>
+						</div>
+						<span class="territorial-barra-numero">{{ "{:,}".format(fila.registros).replace(",", ".") }} · {{ "%.1f"|format(fila.participacion) }}%</span>
+					</div>
+					{% endfor %}
+				</div>
+				<p class="territorial-lectura">
+					Mayor cantidad: <strong>{{ mayor.territorio }}</strong> ({{ "{:,}".format(mayor.registros).replace(",", ".") }}; {{ "%.2f"|format(mayor.participacion) }}%).
+					Menor cantidad: <strong>{{ menor.territorio }}</strong> ({{ "{:,}".format(menor.registros).replace(",", ".") }}; {{ "%.2f"|format(menor.participacion) }}%).
+					Diferencia: <strong>{{ "{:,}".format(diferencia).replace(",", ".") }} registros</strong>.
+				</p>
+			</section>
+
+			<section class="territorial-tarjeta" aria-labelledby="territorial-detalle-titulo">
+				<h2 id="territorial-detalle-titulo">Comportamiento del territorio</h2>
+				<p class="territorial-subtitulo">
+					{% if territorio_seleccionado %}Resultados de {{ detalle.territorio }} en comparación con el conjunto.{% else %}Detalle del territorio con más registros: {{ detalle.territorio }}.{% endif %}
+				</p>
+				<div class="territorial-detalle">
+					<div><span>Registros</span><strong>{{ "{:,}".format(detalle.registros).replace(",", ".") }}</strong></div>
+					<div><span>Muestras</span><strong>{{ "{:,}".format(detalle.muestras).replace(",", ".") }}</strong></div>
+					<div><span>Participación</span><strong>{{ "%.2f"|format(detalle.participacion) }}%</strong></div>
+					<div><span>Indicador más observado</span><strong>{{ detalle.indicador_principal }}</strong></div>
+					{% if detalle.promedio is not none %}
+					<div><span>Promedio{% if unidad %} ({{ unidad }}){% endif %}</span><strong>{{ "%.3f"|format(detalle.promedio) }}</strong></div>
+					<div><span>Mediana{% if unidad %} ({{ unidad }}){% endif %}</span><strong>{{ "%.3f"|format(detalle.mediana) }}</strong></div>
+					{% endif %}
+				</div>
+				<p class="territorial-lectura">El indicador más observado se calcula con todos los registros del territorio, independientemente del filtro de indicador.</p>
+			</section>
+		</div>
+		{% if territorio_seleccionado %}
+		</details>
+		{% endif %}
+
+		<section class="territorial-tarjeta" aria-labelledby="territorial-graficos-titulo">
+			<h2 id="territorial-graficos-titulo">Visualizaciones territoriales</h2>
+			<p class="territorial-subtitulo">
+				{% if territorio_seleccionado %}Visualización de {{ territorio_seleccionado }}.{% else %}Visualización de todos los territorios.{% endif %}
+				Las barras y el pastel comparan mediciones por indicador. Los gráficos y resultados se actualizan al aplicar filtros.
+			</p>
+			<div class="territorial-graficos">
+				<div class="territorial-grafico">
+					<h3 class="h6">Barras: mediciones por indicador</h3>
+					<canvas id="grafico-barras" role="img" aria-label="Gráfico de barras con mediciones por indicador"></canvas>
+				</div>
+				<div class="territorial-grafico">
+					<h3 class="h6">Pastel: participación por indicador</h3>
+					<canvas id="grafico-pastel" role="img" aria-label="Gráfico de pastel con participación de cada indicador"></canvas>
+				</div>
+				<div class="territorial-grafico">
+					<h3 class="h6">Histograma: distribución de resultados</h3>
+					<p class="territorial-lectura" id="histograma-nota"></p>
+					<canvas id="grafico-histograma" role="img" aria-label="Histograma de resultados del indicador seleccionado"></canvas>
+				</div>
+			</div>
+		</section>
+
+		<section class="territorial-tarjeta" aria-labelledby="territorial-resultados-filtro">
+			<h2 id="territorial-resultados-filtro">Resultados de la búsqueda</h2>
+			<p id="total-resultados-filtro" class="territorial-subtitulo" role="status" aria-live="polite"></p>
+			<div class="territorial-tabla-wrap">
+				<table class="territorial-tabla">
+					<thead>
+						<tr>
+							<th scope="col">Departamento</th>
+							<th scope="col">Municipio</th>
+							<th scope="col">Punto de monitoreo</th>
+							<th scope="col">Propiedad observada</th>
+							<th scope="col">Resultado</th>
+							<th scope="col">Unidad</th>
+							<th scope="col">Fecha</th>
+							<th scope="col">Muestra</th>
+						</tr>
+					</thead>
+					<tbody id="filas-resultados-filtro"></tbody>
+				</table>
+			</div>
+			<nav class="territorial-paginacion" aria-label="Paginación de búsqueda">
+				<button class="territorial-boton-secundario" id="pagina-anterior" type="button">Anterior</button>
+				<span id="pagina-actual" aria-live="polite"></span>
+				<button class="territorial-boton-secundario" id="pagina-siguiente" type="button">Siguiente</button>
+			</nav>
+		</section>
+
+		{% if territorio_seleccionado %}
+		<details class="territorial-contexto">
+			<summary>Ver comparación del indicador entre todos los territorios</summary>
+		{% endif %}
+		<section class="territorial-tarjeta" aria-labelledby="territorial-caracteristicas">
+			<h2 id="territorial-caracteristicas">Diferencias en las características medidas</h2>
+			{% if indicador_seleccionado and comparacion_unidades_compatible and comparacion_resultados.mayor %}
+				<p class="territorial-subtitulo">
+					Para <strong>{{ indicador_seleccionado }}</strong>{% if unidad %} ({{ unidad }}){% endif %},
+					el promedio más alto está en <strong>{{ comparacion_resultados.mayor.territorio }}</strong>
+					({{ "%.3f"|format(comparacion_resultados.mayor.valor) }}) y el más bajo en
+					<strong>{{ comparacion_resultados.menor.territorio }}</strong>
+					({{ "%.3f"|format(comparacion_resultados.menor.valor) }}).
+				</p>
+			{% elif indicador_seleccionado and not comparacion_unidades_compatible %}
+				<p class="territorial-nota">Hay más de una unidad para este indicador; se omiten los promedios para evitar comparar mediciones incompatibles.</p>
+			{% elif indicador_seleccionado %}
+				<p class="territorial-subtitulo">No hay resultados numéricos comparables para el indicador seleccionado.</p>
+			{% else %}
+				<p class="territorial-subtitulo">El conjunto reúne indicadores con unidades diferentes, por lo que no se mezclan en un promedio único. La tabla compara la cantidad de registros y la participación de cada territorio; el histograma muestra el indicador más frecuente.</p>
+			{% endif %}
+			<div class="territorial-tabla-wrap">
+				<table class="territorial-tabla">
+					<thead>
+						<tr>
+							<th scope="col">#</th>
+							<th scope="col">{{ nivel_seleccionado }}</th>
+							<th scope="col">Registros</th>
+							<th scope="col">Muestras</th>
+							<th scope="col">Participación</th>
+							<th scope="col">Indicador principal</th>
+							{% if comparacion_unidades_compatible and indicador_seleccionado %}
+							<th scope="col">Promedio</th>
+							<th scope="col">Mediana</th>
+							{% endif %}
+						</tr>
+					</thead>
+					<tbody>
+						{% for fila in resultados %}
+						<tr {% if fila.territorio == territorio_seleccionado %}class="territorial-seleccionado"{% endif %}>
+							<td>{{ fila.posicion }}</td>
+							<td>{{ fila.territorio }}{% if fila.territorio == territorio_seleccionado %} <span class="territorial-insignia">destacado</span>{% endif %}</td>
+							<td>{{ "{:,}".format(fila.registros).replace(",", ".") }}</td>
+							<td>{{ "{:,}".format(fila.muestras).replace(",", ".") }}</td>
+							<td>{{ "%.2f"|format(fila.participacion) }}%</td>
+							<td>{{ fila.indicador_principal }}</td>
+							{% if comparacion_unidades_compatible and indicador_seleccionado %}
+							<td>{% if fila.promedio is not none %}{{ "%.3f"|format(fila.promedio) }}{% else %}—{% endif %}</td>
+							<td>{% if fila.mediana is not none %}{{ "%.3f"|format(fila.mediana) }}{% else %}—{% endif %}</td>
+							{% endif %}
+						</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			</div>
+			<p class="territorial-lectura">La concentración suma la participación de los {{ concentracion_cantidad }} territorios principales. Cada registro corresponde a una medición; varias mediciones pueden pertenecer a una misma muestra.</p>
+		</section>
+		{% endif %}
+		{% if territorio_seleccionado %}
+		</details>
+		{% endif %}
+	</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<script>
+	(() => {
+		const registros = {{ registros_filtro|default([])|tojson }};
+		const selectNivel = document.getElementById("filtro-nivel");
+		const selectTerritorio = document.getElementById("filtro-territorio");
+		const selectIndicador = document.getElementById("filtro-indicador");
+		const campoBusqueda = document.getElementById("filtro-busqueda");
+		const cuerpoTabla = document.getElementById("filas-resultados-filtro");
+		if (!selectNivel || !selectTerritorio || !selectIndicador || !campoBusqueda || !cuerpoTabla) return;
+		const tamanioPagina = 100;
+		let pagina = 1;
+		let resultadoFiltrado = [];
+		let graficos = null;
+		const colores = [
+			"#176b55", "#2f8f7d", "#57a98c", "#80b99b",
+			"#d49b32", "#df765b", "#677ec2", "#9a77b5"
+		];
+
+		const indicesTerritoriales = {
+			Departamento: 0,
+			Municipio: 1,
+			"Punto de monitoreo": 2
+		};
+		const formatoNumero = valor => Number(valor).toLocaleString("es-CO");
+		const valorNumerico = valor => {
+			const normalizado = String(valor).trim().replace(",", ".");
+			if (!normalizado || normalizado === "Sin dato") return null;
+			const numero = Number(normalizado);
+			return Number.isFinite(numero) ? numero : null;
+		};
+
+		const llenarTerritorios = () => {
+			const indice = indicesTerritoriales[selectNivel.value] ?? 0;
+			const seleccionado = selectTerritorio.value;
+			const valores = [...new Set(registros.map(fila => fila[indice]))]
+				.filter(valor => valor && valor !== "Sin dato")
+				.sort((a, b) => a.localeCompare(b, "es"));
+			selectTerritorio.replaceChildren(new Option("Todos", ""));
+			for (const valor of valores) {
+				selectTerritorio.add(new Option(valor, valor));
+			}
+			if (valores.includes(seleccionado)) selectTerritorio.value = seleccionado;
+		};
+
+		const crearGraficos = () => {
+			if (typeof Chart === "undefined") {
+				document.getElementById("histograma-nota").textContent =
+					"No se pudo cargar la librería de gráficos. La tabla filtrada sigue disponible.";
+				return null;
+			}
+			const opcionesComun = {
+				responsive: true,
+				maintainAspectRatio: false
+			};
+			return {
+				barras: new Chart(document.getElementById("grafico-barras"), {
+					type: "bar",
+					data: { labels: [], datasets: [{ label: "Mediciones", data: [], backgroundColor: colores, borderRadius: 6 }] },
+					options: {
+						...opcionesComun,
+						plugins: { legend: { display: false } },
+						scales: { y: { beginAtZero: true, title: { display: true, text: "Cantidad de mediciones" } } }
+					}
+				}),
+				pastel: new Chart(document.getElementById("grafico-pastel"), {
+					type: "pie",
+					data: { labels: [], datasets: [{ data: [], backgroundColor: colores, borderColor: "#ffffff", borderWidth: 2 }] },
+					options: { ...opcionesComun, plugins: { legend: { position: "bottom" } } }
+				}),
+				histograma: new Chart(document.getElementById("grafico-histograma"), {
+					type: "bar",
+					data: { labels: [], datasets: [{ label: "Resultados", data: [], backgroundColor: "#57a98c", borderColor: "#176b55", borderWidth: 1, categoryPercentage: 1, barPercentage: 1 }] },
+					options: {
+						...opcionesComun,
+						plugins: { legend: { display: false } },
+						scales: {
+							y: { beginAtZero: true, title: { display: true, text: "Cantidad de resultados" } },
+							x: { ticks: { maxRotation: 45, minRotation: 30, autoSkip: true, maxTicksLimit: 8 } }
+						}
+					}
+				})
+			};
+		};
+
+		const actualizarGraficos = (registrosTerritorio, registrosVisibles) => {
+			if (!graficos) return;
+			const conteosIndicadores = new Map();
+			for (const fila of registrosTerritorio) {
+				conteosIndicadores.set(fila[3], (conteosIndicadores.get(fila[3]) || 0) + 1);
+			}
+			const indicadoresOrdenados = [...conteosIndicadores.entries()]
+				.sort((a, b) => b[1] - a[1]);
+			const etiquetasIndicadores = indicadoresOrdenados.slice(0, 7).map(par => par[0]);
+			const valoresIndicadores = indicadoresOrdenados.slice(0, 7).map(par => par[1]);
+			const otros = indicadoresOrdenados.slice(7).reduce((suma, par) => suma + par[1], 0);
+			if (otros) {
+				etiquetasIndicadores.push("Otros");
+				valoresIndicadores.push(otros);
+			}
+			for (const grafico of [graficos.barras, graficos.pastel]) {
+				grafico.data.labels = etiquetasIndicadores;
+				grafico.data.datasets[0].data = valoresIndicadores;
+				grafico.update();
+			}
+
+			const solicitado = selectIndicador.value;
+			const indicadorHistograma = solicitado || (indicadoresOrdenados[0] && indicadoresOrdenados[0][0]);
+			const filasIndicador = registrosVisibles.filter(fila => fila[3] === indicadorHistograma);
+			const unidades = [...new Set(filasIndicador.map(fila => fila[5]).filter(unidad => unidad && unidad !== "Sin dato"))];
+			const valores = unidades.length <= 1
+				? filasIndicador.map(fila => valorNumerico(fila[4])).filter(valor => valor !== null)
+				: [];
+			const conteos = Array(10).fill(0);
+			let etiquetas = [];
+			if (valores.length) {
+				let minimo = Math.min(...valores);
+				let maximo = Math.max(...valores);
+				if (minimo === maximo) {
+					const margen = Math.max(Math.abs(minimo) * 0.05, 0.5);
+					minimo -= margen;
+					maximo += margen;
+				}
+				const ancho = (maximo - minimo) / conteos.length;
+				for (const valor of valores) {
+					const indice = Math.min(Math.floor((valor - minimo) / ancho), conteos.length - 1);
+					conteos[indice] += 1;
+				}
+				etiquetas = conteos.map((_, indice) => {
+					const inicio = minimo + ancho * indice;
+					const fin = minimo + ancho * (indice + 1);
+					return `${inicio.toFixed(2)}–${fin.toFixed(2)}`;
+				});
+			}
+			graficos.histograma.data.labels = etiquetas;
+			graficos.histograma.data.datasets[0].data = conteos;
+			graficos.histograma.options.scales.x.title = {
+				display: Boolean(unidades[0]),
+				text: unidades[0] ? `Rango del resultado (${unidades[0]})` : "Rango del resultado"
+			};
+			graficos.histograma.update();
+
+			const nota = document.getElementById("histograma-nota");
+			if (unidades.length > 1) {
+				nota.textContent = `No se mezclan resultados de ${indicadorHistograma}: hay varias unidades.`;
+			} else if (!valores.length) {
+				nota.textContent = "No hay resultados numéricos para construir el histograma.";
+			} else {
+				nota.textContent = `Histograma de ${indicadorHistograma}${unidades[0] ? ` (${unidades[0]})` : ""}: ${formatoNumero(valores.length)} resultados.`;
+			}
+		};
+
+		const renderizarTabla = () => {
+			const paginas = Math.max(1, Math.ceil(resultadoFiltrado.length / tamanioPagina));
+			pagina = Math.min(pagina, paginas);
+			const desde = (pagina - 1) * tamanioPagina;
+			const visibles = resultadoFiltrado.slice(desde, desde + tamanioPagina);
+			cuerpoTabla.replaceChildren();
+			if (!visibles.length) {
+				const filaVacia = document.createElement("tr");
+				const celdaVacia = document.createElement("td");
+				celdaVacia.colSpan = 8;
+				celdaVacia.textContent = "No hay mediciones para los filtros seleccionados.";
+				filaVacia.appendChild(celdaVacia);
+				cuerpoTabla.appendChild(filaVacia);
+			}
+			for (const fila of visibles) {
+				const tr = document.createElement("tr");
+				for (const valor of fila) {
+					const td = document.createElement("td");
+					td.textContent = valor;
+					tr.appendChild(td);
+				}
+				cuerpoTabla.appendChild(tr);
+			}
+			document.getElementById("pagina-actual").textContent =
+				`Página ${pagina} de ${paginas}`;
+			document.getElementById("pagina-anterior").disabled = pagina <= 1;
+			document.getElementById("pagina-siguiente").disabled = pagina >= paginas;
+			document.getElementById("total-resultados-filtro").textContent =
+				`${formatoNumero(resultadoFiltrado.length)} mediciones encontradas; mostrando ${visibles.length}.`;
+		};
+
+		const aplicarFiltros = () => {
+			const indice = indicesTerritoriales[selectNivel.value] ?? 0;
+			const territorio = selectTerritorio.value;
+			const indicador = selectIndicador.value;
+			const busqueda = campoBusqueda.value.trim().toLocaleLowerCase("es");
+			const registrosTerritorio = registros.filter(fila => !territorio || fila[indice] === territorio);
+			const registrosBusqueda = registrosTerritorio.filter(
+				fila => !busqueda || fila.some(valor => String(valor).toLocaleLowerCase("es").includes(busqueda))
+			);
+			resultadoFiltrado = registrosBusqueda.filter(fila => !indicador || fila[3] === indicador);
+			pagina = 1;
+			renderizarTabla();
+			actualizarGraficos(registrosBusqueda, resultadoFiltrado);
+			document.getElementById("resumen-filtros").textContent =
+				`${formatoNumero(resultadoFiltrado.length)} registros para ${territorio || "todos los territorios"}${indicador ? ` · ${indicador}` : ""}${busqueda ? ` · búsqueda: ${campoBusqueda.value.trim()}` : ""}.`;
+		};
+
+		selectNivel.addEventListener("change", () => {
+			llenarTerritorios();
+			aplicarFiltros();
+		});
+		selectTerritorio.addEventListener("change", aplicarFiltros);
+		selectIndicador.addEventListener("change", aplicarFiltros);
+		document.getElementById("aplicar-filtros").addEventListener("click", aplicarFiltros);
+		let temporizadorBusqueda;
+		campoBusqueda.addEventListener("input", () => {
+			clearTimeout(temporizadorBusqueda);
+			temporizadorBusqueda = setTimeout(aplicarFiltros, 150);
+		});
+		document.getElementById("pagina-anterior").addEventListener("click", () => {
+			if (pagina > 1) {
+				pagina -= 1;
+				renderizarTabla();
+			}
+		});
+		document.getElementById("pagina-siguiente").addEventListener("click", () => {
+			const paginas = Math.max(1, Math.ceil(resultadoFiltrado.length / tamanioPagina));
+			if (pagina < paginas) {
+				pagina += 1;
+				renderizarTabla();
+			}
+		});
+
+		llenarTerritorios();
+		graficos = crearGraficos();
+		aplicarFiltros();
+	})();
+</script>
