@@ -90,7 +90,64 @@
 
 {% endif %}
 
+<section>
+  <h2>Conocimientos evidentes</h2>
 
+  <div class="tmp-card hallazgo">
+    <h3>Conocimiento 1: La actividad de monitoreo se redujo drásticamente desde 2012</h3>
+    <dl>
+      <dt>Pregunta</dt><dd>¿Cómo cambió la cantidad de registros durante el periodo disponible?</dd>
+      <dt>Variables</dt><dd>FECHA (año), NOMBRE DEL PUNTO DE MONITOREO.</dd>
+      <dt>Procedimiento</dt><dd>Conteo de registros por año y comparación del periodo 1999–2011 con 2012–2024 (13 años cada uno). Conteo de puntos distintos por año.</dd>
+      <dt>Evidencia</dt><dd>Se puede observar en la gráfica 1. 21.517 registros en 1999–2011 (con un promedio de 1.655 por año) frente a 3.860 en 2012–2024 (con promedio de 297 por año). Puntos activos: entre 14 y 26 hasta 2011 y solo 4 entre 2019 y 2023.</dd>
+      <dt>Hallazgo</dt><dd>El pico fue 2000 (3.325 registros); el mínimo de un año completo fue 2020 (89). El promedio anual cayó cerca de 82 %.</dd>
+      <dt>Interpretación</dt><dd>La caída acompaña la reducción de estaciones activas, así que refleja menor cobertura de la red más que un cambio en la lluvia.</dd>
+      <dt>Utilidad</dt><dd>Sustenta priorizar la reactivación de puntos de monitoreo.</dd>
+      <dt>Limitación</dt><dd>Los datos no explican por qué se redujo el monitoreo.</dd>
+    </dl>
+  </div>
+
+  <div class="tmp-card hallazgo">
+    <h3>Conocimiento 2: Los registros tienen dos picos al año</h3>
+    <dl>
+      <dt>Pregunta</dt><dd>¿Hay meses con más o menos registros que se repitan cada año?</dd>
+      <dt>Variables</dt><dd>FECHA (año y mes).</dd>
+      <dt>Procedimiento</dt><dd>Conteo de registros por mes en todo el periodo y mapa de calor año × mes.</dd>
+      <dt>Evidencia</dt><dd>Con la gráfica 2. Se ve que en marzo–mayo hay 2.506, 2.600 y 2.614 registros. En octubre y noviembre: 3.490 y 3.027. En enero: 1.235. Y en julio y agosto: 1.386 y 1.333.</dd>
+      <dt>Hallazgo</dt><dd>Hay un patrón bimodal, con octubre como mes de mayor volumen.</dd>
+      <dt>Interpretación</dt><dd>Los picos coinciden con las temporadas de lluvias típicas de la región andina, lo que sugiere que se recolectan más muestras cuando llueve más. Esto es una hipótesis: el conjunto no incluye datos de precipitación.</dd>
+      <dt>Utilidad</dt><dd>Permite planear personal y logística de muestreo para las temporadas de mayor recolección.</dd>
+      <dt>Limitación</dt><dd>Los conteos dependen de la disponibilidad de estaciones y del esfuerzo de muestreo, no solo de la lluvia.</dd>
+    </dl>
+  </div>
+
+  <div class="tmp-card hallazgo">
+    <h3>Conocimiento 3: El pH mediano de la lluvia bajó en los años recientes</h3>
+    <dl>
+      <dt>Pregunta</dt><dd>¿Cambió la acidez de la lluvia a lo largo del tiempo?</dd>
+      <dt>Variables</dt><dd>FECHA (año), PROPIEDAD OBSERVADA = pH, RESULTADO.</dd>
+      <dt>Procedimiento</dt><dd>Se descartaron 2 valores de pH fuera de 0–14 (por ejemplo 2070) y se calculó la mediana anual. Se comparó 1999–2011 con 2019–2024 y la proporción de mediciones con pH menor a 5,6.</dd>
+      <dt>Evidencia</dt><dd>En la gráfica 3 hay mediana de 5,68 en 1999–2011 y de 4,77 en 2019–2024. También mediciones con pH menor a 5,6: 45 % frente a 79 %.</dd>
+      <dt>Hallazgo</dt><dd>La lluvia registrada es más ácida en los años recientes; 2023 (4,23) y 2024 (4,34) son los valores más bajos.</dd>
+      <dt>Interpretación</dt><dd>El pH de 5,6 se usa como referencia de lluvia natural sin contaminación. Los valores recientes están claramente por debajo de ella.</dd>
+      <dt>Utilidad</dt><dd>Justifica investigar las causas en los puntos con pH más bajo y mantener el monitoreo.</dd>
+      <dt>Limitación</dt><dd>Los años recientes vienen de 2 a 4 puntos y menos mediciones (99 en 2023, 18 en 2024). El cambio puede deberse en parte a qué estaciones siguen activas.</dd>
+    </dl>
+  </div>
+</section>
+
+<section>
+  <h2>Limitación del análisis</h2>
+  <p>La cobertura no es constante, ya que la cantidad de puntos activos pasó de más de 20 a solo 4. Por eso el aumento o la
+  caída de registros y la comparación entre periodos mezclan cambios reales con cambios en la red de monitoreo.
+  Además, el conjunto no incluye datos de precipitación y 2024 está incompleto. Por lo cual es difícil generalizar los resultados.</p>
+  <h2>Posible decisión sustentada en los datos</h2>
+  <p>Viendo los datos, sería buena idea reactivar o ampliar los puntos de monitoreo, y concentrar el muestreo en marzo–mayo y octubre–noviembre, para
+  contar con series comparables que confirmen si la lluvia realmente se volvió más ácida.</p>
+</section>
+
+</div>
+</div>
 <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
 {% if not vacio %}
 <script>
