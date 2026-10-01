@@ -17,7 +17,9 @@
 
 <section class="container py-5">
   <p class="descripcion">{{ dim.descripcion }}</p>
-  {% if resultados %}
+   {% if resultados and dim.clase == "poblacional" %}
+    {% include "poblacional.html" %}
+  {% elif resultados %}
   <div class="resultados">
     {% for nombre, valor in resultados.items() %}
     <p><strong>{{ nombre }}:</strong> {{ valor }}</p>
