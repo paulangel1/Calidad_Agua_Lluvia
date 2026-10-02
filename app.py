@@ -73,8 +73,9 @@ def mostrar_dimension(clave):
     modulo = DIMENSIONES[clave]
     analizar = getattr(modulo, "analizar", None)
     resultados = analizar() if callable(analizar) else None
+    plantilla = getattr(modulo, "PLANTILLA", "Dimensiones.html")
     return render_template(
-        "Dimensiones.html",
+        plantilla,
         dim=DESCRIPCION[clave],
         resultados=resultados,
     )
