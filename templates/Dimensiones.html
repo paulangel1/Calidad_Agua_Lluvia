@@ -24,6 +24,8 @@
     {% include "poblacional.html" %}
   {% elif resultados and dim.clase == "temporal" %}
     {{ resultados.html }}
+  {% elif resultados and dim.clase == "relacional" %}
+    {{ resultados.html }}
   {% elif resultados %}
   <div class="resultados">
     {% for nombre, valor in resultados.items() %}

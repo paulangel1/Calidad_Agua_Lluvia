@@ -1,0 +1,160 @@
+<style>
+.rel-dim section,.rel-dim .rel-card{background:var(--papel);border:1px solid var(--linea);border-radius:6px;padding:1.2rem 1.4rem;margin-bottom:1.4rem}
+.rel-dim h2{margin:0 0 .7rem;font-family:var(--serif);font-size:1.45rem;font-weight:600;color:var(--tinta)}
+.rel-dim h3{margin:0 0 .6rem;font-family:var(--serif);font-size:1.2rem;font-weight:600;color:var(--tinta)}
+.rel-dim table{border-collapse:collapse;width:100%;font-size:.92rem}
+.rel-dim td,.rel-dim th{text-align:left;padding:.4rem .55rem;border-bottom:1px solid var(--linea);vertical-align:top}
+.rel-dim .filtros{display:flex;flex-wrap:wrap;gap:1rem;align-items:end}
+.rel-dim .filtros label{display:flex;flex-direction:column;font-size:.85rem;font-weight:600;gap:.25rem}
+.rel-dim select{padding:.45rem .6rem;border:1px solid var(--linea);border-radius:4px;background:#fff;font-size:.95rem;color:var(--tinta)}
+.rel-dim .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:1rem;margin-bottom:1.4rem}
+.rel-dim .kpi{background:var(--papel);border:1px solid var(--linea);border-top:4px solid var(--azul);padding:1rem 1.2rem}
+.rel-dim .kpi .v{font-family:var(--serif);font-size:1.7rem;font-weight:600;color:var(--tinta);line-height:1.15}
+.rel-dim .kpi .t{font-size:.85rem;color:var(--tinta-suave)}
+.rel-dim .grafica{width:100%;height:420px}
+.rel-dim .interp{background:#e8f1f4;border-left:4px solid var(--azul);padding:.7rem 1rem;font-size:.93rem;margin-top:.6rem}
+.rel-dim .hallazgo dl{margin:0;display:grid;grid-template-columns:130px 1fr;gap:.4rem .9rem;font-size:.92rem}
+.rel-dim .hallazgo dt{font-weight:700;color:var(--azul)}
+.rel-dim .hallazgo dd{margin:0}
+.rel-dim .aviso{color:#8a4b00;background:#fff4e5;border:1px solid #f0d3a6;padding:.7rem 1rem;border-radius:4px;margin-bottom:1.4rem}
+.rel-dim small{color:var(--tinta-suave)}
+@media (max-width:640px){.rel-dim .hallazgo dl{grid-template-columns:1fr}}
+</style>
+<div class="rel-dim">
+
+<section>
+  <h2>Descripción de las variables utilizadas</h2>
+  <p>Se cruzan tres o más variables del conjunto <b>Data Histórica de Calidad de Agua Lluvia</b> (IDEAM). Se excluyen los
+     resultados bajo el límite de detección ("&lt;2", "&lt;3"), la DQO y el fósforo total (muy pocos registros) y los pH fuera de 0–14.</p>
+  <table>
+    <tr><th>Variable</th><th>Tipo</th><th>Uso en el análisis</th></tr>
+    <tr><td>PROPIEDAD OBSERVADA</td><td>Categórica</td><td>Qué parámetro se analiza (filtro 1).</td></tr>
+    <tr><td>RESULTADO</td><td>Numérica</td><td>Valor medido: promedios, correlación y casos inusuales.</td></tr>
+    <tr><td>DEPARTAMENTO / MUNICIPIO</td><td>Territorial</td><td>Filtro 2 y agrupación de la gráfica 3.</td></tr>
+    <tr><td>FECHA</td><td>Temporal</td><td>Agrupada en cinco periodos: 1999-2004 a 2020-2024.</td></tr>
+    <tr><td>ELEVACIÓN</td><td>Numérica</td><td>Altitud del punto, relacionada con el valor promedio.</td></tr>
+    <tr><td>NOMBRE DEL PUNTO DE MONITOREO</td><td>Categórica</td><td>Unidad para calcular el promedio por estación.</td></tr>
+  </table>
+</section>
+
+<section>
+  <h2>Filtros interactivos</h2>
+  <form method="get" class="filtros">
+    <label>Propiedad observada
+      <select name="propiedad" onchange="this.form.submit()">
+        {% for p in propiedades %}<option value="{{p}}" {{ 'selected' if sel.propiedad == p }}>{{p}}</option>{% endfor %}
+      </select></label>
+    <label>Departamento
+      <select name="depto" onchange="this.form.submit()">
+        <option value="">Todos</option>
+        {% for d in deptos %}<option value="{{d}}" {{ 'selected' if sel.depto == d }}>{{d}}</option>{% endfor %}
+      </select></label>
+  </form>
+</section>
+
+{% if vacio %}<div class="aviso">No hay datos con los filtros seleccionados. Ajusta los filtros.</div>
+{% else %}
+<p><b>Registros analizados:</b> {{ "{:,}".format(kpis.total).replace(",", ".") }} mediciones de {{ sel.propiedad }}{% if kpis.acida is not none %}. El {{ kpis.acida }} % es lluvia ácida (pH &lt; 5,6){% endif %}.</p>
+<div class="kpis">
+  <div class="kpi"><div class="v">{{ kpis.combo }}</div><div class="t">Combinación departamento – propiedad – periodo con más registros<br>{{ "{:,}".format(kpis.combo_n).replace(",", ".") }} registros</div></div>
+  <div class="kpi"><div class="v">{{ "N/D" if kpis.corr is none else kpis.corr }}</div><div class="t">Correlación entre elevación y valor promedio<br>{{ kpis.puntos }} puntos (entre -1 y 1)</div></div>
+  <div class="kpi"><div class="v">{{ kpis.inusuales_pct }} %</div><div class="t">Casos inusuales (regla IQR)<br>{{ kpis.inusuales }} fuera de [{{ kpis.lim_inf }}; {{ kpis.lim_sup }}]</div></div>
+</div>
+
+<div class="rel-card">
+  <h2>1. Promedio por departamento y periodo — {{ datos.propiedad }}</h2>
+  <div id="r1" class="grafica"></div>
+  <div class="interp"><b>Interpretación:</b> Cruza propiedad, departamento y periodo. Con pH, Boyacá y Huila tienen promedios
+    cercanos a 4,7 en 2020-2024, por debajo del umbral de lluvia ácida (5,6). Las celdas vacías indican periodos sin mediciones.</div>
+</div>
+<div class="rel-card">
+  <h2>2. Elevación vs. valor promedio por punto de monitoreo</h2>
+  <div id="r2" class="grafica"></div>
+  <div class="interp"><b>Interpretación:</b> Cruza propiedad, elevación, punto y departamento; el tamaño indica cuántas mediciones
+    tiene cada punto. Con pH la relación es débil (0,19); con temperatura es fuerte y negativa (−0,78): a mayor altitud, menor temperatura.</div>
+</div>
+<div class="rel-card">
+  <h2>3. Distribución por municipio y periodo</h2>
+  <div id="r3" class="grafica"></div>
+  <div class="interp"><b>Interpretación:</b> Cruza propiedad, municipio y periodo. La mayoría de municipios tiene pH entre 5 y 7;
+    los puntos aislados son casos inusuales que pueden ser eventos puntuales o errores de registro.</div>
+</div>
+{% endif %}
+
+<section>
+  <h2>Conocimientos evidentes</h2>
+  <div class="rel-card hallazgo">
+    <h3>Conocimiento 1: Casi la mitad de la lluvia monitoreada es ácida</h3>
+    <dl>
+      <dt>Pregunta</dt><dd>¿Qué departamentos tienen más lluvia ácida?</dd>
+      <dt>Variables</dt><dd>PROPIEDAD OBSERVADA (pH), RESULTADO, DEPARTAMENTO.</dd>
+      <dt>Procedimiento</dt><dd>Porcentaje de mediciones de pH menores a 5,6 por departamento.</dd>
+      <dt>Evidencia</dt><dd>Gráfica 1 y tablero con el filtro pH.</dd>
+      <dt>Hallazgo</dt><dd>El 48,3 % de las mediciones de pH es lluvia ácida; en Boyacá (68,9 %) y Meta (69,2 %) es mayor.</dd>
+      <dt>Interpretación</dt><dd>El problema no es igual en todo el país: se concentra en algunos departamentos.</dd>
+      <dt>Utilidad</dt><dd>Priorizar esos departamentos en programas de seguimiento ambiental.</dd>
+      <dt>Limitación</dt><dd>No se conoce la causa; depende de los puntos que tiene cada departamento.</dd>
+    </dl>
+  </div>
+  <div class="rel-card hallazgo">
+    <h3>Conocimiento 2: La acidez aumentó en el último periodo</h3>
+    <dl>
+      <dt>Pregunta</dt><dd>¿Cómo cambió la acidez de la lluvia entre periodos?</dd>
+      <dt>Variables</dt><dd>pH, FECHA agrupada en periodos, DEPARTAMENTO.</dd>
+      <dt>Procedimiento</dt><dd>pH promedio y porcentaje de lluvia ácida por periodo.</dd>
+      <dt>Evidencia</dt><dd>Gráfica 1.</dd>
+      <dt>Hallazgo</dt><dd>En 2020-2024 el pH promedio baja a 4,91 y el 79,6 % es ácida, frente a 48,9 % en 1999-2004.</dd>
+      <dt>Interpretación</dt><dd>La lluvia de los últimos años en los puntos medidos es más ácida.</dd>
+      <dt>Utilidad</dt><dd>Justifica aumentar el muestreo para confirmar la tendencia.</dd>
+      <dt>Limitación</dt><dd>El último periodo solo tiene 398 mediciones y menos puntos activos.</dd>
+    </dl>
+  </div>
+  <div class="rel-card hallazgo">
+    <h3>Conocimiento 3: Hay casos inusuales y errores de registro</h3>
+    <dl>
+      <dt>Pregunta</dt><dd>¿Hay casos inusuales en las mediciones?</dd>
+      <dt>Variables</dt><dd>RESULTADO, PROPIEDAD OBSERVADA, MUNICIPIO, FECHA (periodo).</dd>
+      <dt>Procedimiento</dt><dd>Regla IQR por propiedad y revisión del rango válido de pH (0–14).</dd>
+      <dt>Evidencia</dt><dd>Gráfica 3 e indicador 3.</dd>
+      <dt>Hallazgo</dt><dd>Hay pH imposibles (2.070 en Cali y 21,8 en Bogotá); conductividad (7,6 %) y nitrato (6,2 %) tienen más casos inusuales que el pH (1,7 %).</dd>
+      <dt>Interpretación</dt><dd>Parte de los valores extremos son errores de registro y deben limpiarse antes de comparar.</dd>
+      <dt>Utilidad</dt><dd>Revisar la calidad del registro antes de publicar los datos.</dd>
+      <dt>Limitación</dt><dd>La regla IQR no distingue un error de un evento real.</dd>
+    </dl>
+  </div>
+</section>
+
+<section>
+  <h2>Limitación del análisis</h2>
+  <p>La cantidad de mediciones cambia mucho entre departamentos y periodos, por lo que algunos promedios se basan en pocos datos;
+     además, una correlación no implica causalidad.</p>
+  <h2>Posible decisión sustentada en los datos</h2>
+  <p>Priorizar el seguimiento de la lluvia ácida en Boyacá, Meta y Huila y recuperar la frecuencia de muestreo en los últimos años,
+     apoyándose en los conocimientos 1 y 2.</p>
+</section>
+
+</div>
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+{% if not vacio %}
+<script>
+(function () {
+  const d = {{ datos|tojson }};
+  const cfg = { responsive: true, displaylogo: false };
+  const h = d.heatmap;
+  Plotly.newPlot("r1", [{ z: h.z, x: h.x, y: h.y, type: "heatmap", texttemplate: "%{z}", hoverongaps: false,
+    colorscale: [[0,"#e8f1f4"],[1,"#347a91"]], colorbar: { title: d.unidad },
+    hovertemplate: "%{y} · %{x}<br>Promedio: %{z}<extra></extra>" }],
+    { margin: { t: 10, r: 10, l: 10, b: 40 }, xaxis: { type: "category" },
+      yaxis: { type: "category", autorange: "reversed", automargin: true } }, cfg);
+  Plotly.newPlot("r2", d.dispersion.map(g => ({ x: g.x, y: g.y, text: g.punto, customdata: g.n, name: g.depto,
+    type: "scatter", mode: "markers",
+    marker: { size: g.n, sizemode: "area", sizeref: 2 * d.max_n / (40 * 40), sizemin: 3 },
+    hovertemplate: "%{text}<br>Elevación: %{x} m<br>Promedio: %{y}<br>Mediciones: %{customdata}<extra></extra>" })),
+    { margin: { t: 10, r: 10, l: 55, b: 45 }, xaxis: { title: "Elevación (m s. n. m.)" },
+      yaxis: { title: d.propiedad + " promedio" } }, cfg);
+  Plotly.newPlot("r3", d.cajas.map(c => ({ x: c.x, y: c.y, name: c.periodo, type: "box" })),
+    { margin: { t: 10, r: 10, l: 55, b: 90 }, boxmode: "group", xaxis: { tickangle: -45 },
+      yaxis: { title: d.propiedad + " (" + d.unidad + ")" }, legend: { orientation: "h", y: 1.1 } }, cfg);
+})();
+</script>
+{% endif %}
