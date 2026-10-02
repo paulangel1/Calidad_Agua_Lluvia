@@ -322,3 +322,331 @@ button:focus-visible {
 		transition-duration: 0.01ms !important;
 	}
 }
+
+.territorial {
+	--territorial-verde: #176b55;
+	--territorial-verde-oscuro: #0f4b3d;
+	--territorial-verde-claro: #edf5f2;
+	--territorial-texto: #263b35;
+	--territorial-suave: #667a73;
+	--territorial-borde: #dfeae5;
+	padding-bottom: 3rem;
+	background: #f5f8f6;
+	color: var(--territorial-texto);
+}
+
+.territorial-nota {
+	margin-top: 1rem;
+	padding: 0.8rem 1rem;
+	border-left: 4px solid #d29a25;
+	border-radius: 0.4rem;
+	background: #fff7df;
+	color: #543d10;
+}
+
+.territorial-filtros,
+.territorial-tarjeta {
+	margin-top: 1.25rem;
+	padding: 1.25rem;
+	border: 1px solid var(--territorial-borde);
+	border-radius: 0.9rem;
+	background: #fff;
+	box-shadow: 0 6px 20px rgb(23 107 85 / 6%);
+}
+
+.territorial-filtros h2,
+.territorial-tarjeta h2 {
+	margin: 0 0 0.3rem;
+	color: var(--territorial-verde-oscuro);
+	font-size: 1.25rem;
+}
+
+.territorial-subtitulo {
+	margin-bottom: 1rem;
+	color: var(--territorial-suave);
+}
+
+.territorial-controles {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+	align-items: end;
+	gap: 1rem;
+}
+
+.territorial-controles label {
+	display: grid;
+	gap: 0.4rem;
+	font-weight: 600;
+}
+
+.territorial-controles select,
+.territorial-controles input {
+	width: 100%;
+	min-height: 44px;
+	padding: 0.55rem 0.7rem;
+	border: 1px solid #cadbd3;
+	border-radius: 0.5rem;
+	background: #fff;
+	color: var(--territorial-texto);
+}
+
+.territorial-boton {
+	min-height: 44px;
+	padding: 0.55rem 1rem;
+	border: 0;
+	border-radius: 0.5rem;
+	background: var(--territorial-verde);
+	color: #fff;
+	font-weight: 700;
+}
+
+.territorial-boton:hover {
+	background: var(--territorial-verde-oscuro);
+}
+
+.territorial-kpis {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
+	gap: 0.9rem;
+	margin-top: 1.25rem;
+}
+
+.territorial-kpi {
+	padding: 1rem 1.1rem;
+	border: 1px solid var(--territorial-borde);
+	border-top: 3px solid var(--territorial-verde);
+	border-radius: 0.75rem;
+	background: #fff;
+}
+
+.territorial-kpi span,
+.territorial-kpi small {
+	display: block;
+	color: var(--territorial-suave);
+}
+
+.territorial-kpi span {
+	font-size: 0.88rem;
+}
+
+.territorial-kpi strong {
+	display: block;
+	margin-top: 0.25rem;
+	font-size: 1.35rem;
+}
+
+.territorial-kpi small {
+	margin-top: 0.2rem;
+}
+
+.territorial-grid {
+	display: grid;
+	grid-template-columns: minmax(0, 1.3fr) minmax(280px, 0.7fr);
+	gap: 1.25rem;
+}
+
+.territorial-barras {
+	display: grid;
+	gap: 0.8rem;
+	margin-top: 1rem;
+}
+
+.territorial-barra-fila {
+	display: grid;
+	grid-template-columns: minmax(115px, 1fr) minmax(100px, 2fr) auto;
+	align-items: center;
+	gap: 0.75rem;
+}
+
+.territorial-barra-nombre {
+	overflow: hidden;
+	font-size: 0.9rem;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.territorial-barra-fondo {
+	height: 13px;
+	overflow: hidden;
+	border-radius: 999px;
+	background: var(--territorial-verde-claro);
+}
+
+.territorial-barra-valor {
+	width: var(--territorial-ancho);
+	height: 100%;
+	border-radius: inherit;
+	background: linear-gradient(90deg, #23836d, #54ad8c);
+}
+
+.territorial-barra-numero {
+	min-width: 5rem;
+	color: var(--territorial-suave);
+	font-size: 0.85rem;
+	text-align: right;
+}
+
+.territorial-tabla-wrap {
+	max-height: 560px;
+	overflow: auto;
+	border: 1px solid var(--territorial-borde);
+	border-radius: 0.6rem;
+}
+
+.territorial-tabla {
+	width: 100%;
+	margin: 0;
+	border-collapse: collapse;
+	font-size: 0.9rem;
+}
+
+.territorial-tabla th,
+.territorial-tabla td {
+	padding: 0.7rem 0.75rem;
+	border-bottom: 1px solid #e8efeb;
+	text-align: left;
+	white-space: nowrap;
+}
+
+.territorial-tabla th {
+	position: sticky;
+	top: 0;
+	z-index: 1;
+	background: var(--territorial-verde-claro);
+	color: var(--territorial-verde-oscuro);
+}
+
+.territorial-tabla tr:last-child td {
+	border-bottom: 0;
+}
+
+.territorial-tabla tr.territorial-seleccionado {
+	background: #f0f8f4;
+	font-weight: 600;
+}
+
+.territorial-tabla td:nth-child(n + 2),
+.territorial-tabla th:nth-child(n + 2) {
+	text-align: right;
+}
+
+.territorial-insignia {
+	display: inline-block;
+	padding: 0.2rem 0.55rem;
+	border-radius: 999px;
+	background: var(--territorial-verde-claro);
+	color: var(--territorial-verde-oscuro);
+	font-size: 0.8rem;
+}
+
+.territorial-detalle {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
+	gap: 0.75rem;
+	margin: 1rem 0;
+}
+
+.territorial-detalle div {
+	padding: 0.75rem;
+	border-radius: 0.55rem;
+	background: #f5f8f6;
+}
+
+.territorial-detalle span {
+	display: block;
+	color: var(--territorial-suave);
+	font-size: 0.82rem;
+}
+
+.territorial-detalle strong {
+	display: block;
+	margin-top: 0.2rem;
+	overflow-wrap: anywhere;
+}
+
+.territorial-lectura {
+	margin: 0.7rem 0 0;
+	color: var(--territorial-suave);
+}
+
+.territorial-vacio {
+	padding: 2rem;
+	color: var(--territorial-suave);
+	text-align: center;
+}
+
+.territorial-contexto {
+	margin-top: 1.25rem;
+}
+
+.territorial-contexto > summary {
+	padding: 1rem 1.25rem;
+	border: 1px solid var(--territorial-borde);
+	border-radius: 0.75rem;
+	background: #fff;
+	color: var(--territorial-verde-oscuro);
+	font-weight: 700;
+	cursor: pointer;
+}
+
+.territorial-contexto[open] > summary {
+	margin-bottom: 1rem;
+}
+
+.territorial-paginacion {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+	margin-top: 1rem;
+}
+
+.territorial-boton-secundario {
+	padding: 0.5rem 0.9rem;
+	border: 1px solid var(--territorial-verde);
+	border-radius: 0.5rem;
+	background: #fff;
+	color: var(--territorial-verde);
+	font: inherit;
+	font-weight: 600;
+}
+
+.territorial-boton-secundario:hover:not(:disabled) {
+	background: var(--territorial-verde-claro);
+}
+
+.territorial-boton-secundario:disabled {
+	cursor: not-allowed;
+	opacity: 0.5;
+}
+
+.territorial-graficos {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
+	gap: 1.25rem;
+}
+
+.territorial-grafico {
+	position: relative;
+	min-height: 320px;
+}
+
+.territorial-grafico canvas {
+	max-height: 300px;
+}
+
+@media (max-width: 767.98px) {
+	.territorial-grid {
+		grid-template-columns: 1fr;
+	}
+
+	.territorial-barra-fila {
+		grid-template-columns: minmax(90px, 0.9fr) minmax(70px, 1.2fr) auto;
+		gap: 0.45rem;
+	}
+
+	.territorial-barra-numero {
+		min-width: 4.3rem;
+		font-size: 0.78rem;
+	}
+}

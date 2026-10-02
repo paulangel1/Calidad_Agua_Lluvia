@@ -11,13 +11,8 @@ DESCRIPCION = {
         "nombre": "Dimensión poblacional",
         "clase": "poblacional",
         "endpoint": "dimension_poblacional",
-        "pregunta": "¿Qué se está midiendo en las muestras?",
-        "descripcion": "Cantidad total de registros. "
-                      "Categorías principales. "
-                      "Porcentaje de participación por categoría. "
-                      "Grupos predominantes y minoritarios. "
-                      "Distribución de las variables principales. "
-                      "Características generales de la población.",
+        "pregunta": "¿Cómo está compuesta y distribuida la población analizada según sus principales características?",
+        "descripcion": "Composición de las muestras de agua lluvia. ¿Cuántos registros hay?, ¿Qué propiedades se miden?, ¿En qué puntos de monitoreo se recolectan y qué proporción de los resultados está censurada por el límite de detección del equipo.",
     },
     "territorial": {
         "nombre": "Dimensión territorial",
@@ -73,9 +68,8 @@ def mostrar_dimension(clave):
     modulo = DIMENSIONES[clave]
     analizar = getattr(modulo, "analizar", None)
     resultados = analizar() if callable(analizar) else None
-    plantilla = getattr(modulo, "PLANTILLA", "Dimensiones.html")
     return render_template(
-        plantilla,
+        "Dimensiones.html",
         dim=DESCRIPCION[clave],
         resultados=resultados,
     )
@@ -104,4 +98,4 @@ def dimension_relacional():
     return mostrar_dimension("relacional")
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=False)
