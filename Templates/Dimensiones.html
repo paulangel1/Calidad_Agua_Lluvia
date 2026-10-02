@@ -15,9 +15,18 @@
   </div>
 </section>
 
+{% if dim.clase == "territorial" %}
+  {% include "Dimension_Territorial.html" %}
+{% else %}
 <section class="container py-5">
   <p class="descripcion">{{ dim.descripcion }}</p>
-  {% if resultados %}
+  {% if resultados and dim.clase == "poblacional" %}
+    {% include "poblacional.html" %}
+  {% elif resultados and dim.clase == "temporal" %}
+    {{ resultados.html }}
+  {% elif resultados and dim.clase == "relacional" %}
+    {{ resultados.html }}
+  {% elif resultados %}
   <div class="resultados">
     {% for nombre, valor in resultados.items() %}
     <p><strong>{{ nombre }}:</strong> {{ valor }}</p>
@@ -29,4 +38,5 @@
   </div>
   {% endif %}
 </section>
+{% endif %}
 {% endblock %}
