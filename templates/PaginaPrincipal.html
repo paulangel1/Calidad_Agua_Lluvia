@@ -2,6 +2,17 @@
 {% block titulo %}Pagina Principal  {% endblock %}
 {% block contenido %}
 <section class="portada">
+  <svg class="portada-ilustracion" viewBox="0 0 360 360" aria-hidden="true">
+    <circle cx="180" cy="180" r="150" fill="#79c000" opacity=".12"/>
+    <circle cx="180" cy="180" r="119" fill="none" stroke="#79c000" stroke-opacity=".32" stroke-width="2"/>
+    <circle cx="180" cy="180" r="88" fill="#00a99d" opacity=".2"/>
+    <path d="M180 57c-24 37-57 72-57 105a57 57 0 0 0 114 0c0-33-33-68-57-105Z" fill="#79c000"/>
+    <path d="M147 166c0 18 14 32 32 32" fill="none" stroke="#e8f5bd" stroke-linecap="round" stroke-width="7"/>
+    <path d="M216 130c13 17 20 30 20 43" fill="none" stroke="#c6e980" stroke-linecap="round" stroke-width="6"/>
+    <path d="M83 260c27-14 55-21 97-21s70 7 97 21" fill="none" stroke="#00a99d" stroke-linecap="round" stroke-width="9"/>
+    <path d="M109 286c20-9 42-13 71-13s51 4 71 13" fill="none" stroke="#79c000" stroke-linecap="round" stroke-width="6" opacity=".8"/>
+    <path d="M79 105v20m-10-10h20M278 79v16m-8-8h16" stroke="#c6e980" stroke-linecap="round" stroke-width="4"/>
+  </svg>
   <div class="container">
     <h1>Calidad del agua lluvia en Colombia</h1>
     <p class="lead">Explora la data histórica del IDEAM desde las mediciones, el territorio,
@@ -15,8 +26,10 @@
     <div class="col-md-6">
       <a class="dimension-enlace dim-{{ d.clase }}" href="{{ url_for(d.endpoint) }}">
         <h2 class="h4">{{ d.nombre }}</h2>
-        <p class="fw-medium mb-1">{{ d.pregunta }}</p>
-        <p class="mb-0 texto-suave">{{ d.descripcion }}</p>
+        <div class="dimension-enlace-detalle">
+          <p class="fw-medium mb-2">{{ d.pregunta }}</p>
+          <p class="mb-0 texto-suave">{{ d.descripcion }}</p>
+        </div>
       </a>
     </div>
     {% endfor %}
