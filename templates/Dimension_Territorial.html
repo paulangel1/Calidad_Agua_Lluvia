@@ -16,7 +16,6 @@
 {% set resultados = datos.resultados %}
 {% set mayor = datos.mayor %}
 {% set menor = datos.menor %}
-{% set diferencia = datos.diferencia %}
 {% set unidad = datos.unidad %}
 {% set graficos_indicadores = datos.graficos_indicadores %}
 {% set histograma = datos.histograma %}
@@ -26,6 +25,7 @@
 
 <div class="territorial">
 	<div class="container">
+		<p class="territorial-descripcion">La población se muestra con una distribución por medios de departamentos y luego segmentados por municipios y puntos de monitoreos pertenecientes al IDEAM, donde se hace la delimitación por la cantidad de registro recolectados en cada uno de los mencionados anterior ment y esto despues de la pregunta principal</p>
 		{% if sin_datos %}
 		<section class="territorial-tarjeta territorial-vacio" role="status">
 			<h2>No hay datos territoriales para mostrar</h2>
@@ -107,10 +107,8 @@
 					</div>
 					{% endfor %}
 				</div>
-				<p class="territorial-lectura">
-					Mayor cantidad: <strong>{{ mayor.territorio }}</strong> ({{ "{:,}".format(mayor.registros).replace(",", ".") }}; {{ "%.2f"|format(mayor.participacion) }}%).
-					Menor cantidad: <strong>{{ menor.territorio }}</strong> ({{ "{:,}".format(menor.registros).replace(",", ".") }}; {{ "%.2f"|format(menor.participacion) }}%).
-					Diferencia: <strong>{{ "{:,}".format(diferencia).replace(",", ".") }} registros</strong>.
+				<p class="territorial-interpretacion">
+					<strong>Interpretación:</strong> {{ mayor.territorio }} reúne más registros y {{ menor.territorio }} menos. Esto muestra cómo se distribuyen las mediciones entre los territorios, no cuál tiene mejor o peor calidad del agua.
 				</p>
 			</section>
 
@@ -146,15 +144,18 @@
 				<div class="territorial-grafico">
 					<h3 class="h6">Barras: mediciones por indicador</h3>
 					<canvas id="grafico-barras" role="img" aria-label="Gráfico de barras con mediciones por indicador"></canvas>
+					<p class="territorial-interpretacion"><strong>Interpretación:</strong> permite comparar los registros obtenidos para cada variable —pH, conductividad eléctrica, nitrato, sulfato, temperatura, oxígeno y fósforo total— en el territorio filtrado. En la visualización revisada predominan los registros de pH, mientras que las demás variables tienen menor presencia; las cantidades cambian al modificar los filtros.</p>
 				</div>
 				<div class="territorial-grafico">
 					<h3 class="h6">Pastel: participación por indicador</h3>
 					<canvas id="grafico-pastel" role="img" aria-label="Gráfico de pastel con participación de cada indicador"></canvas>
+					<p class="territorial-interpretacion"><strong>Interpretación:</strong> permite comparar de forma visual la participación de los indicadores analizados. La gráfica también hace evidente que faltan registros de algunas variables; contar con mediciones más completas ayudaría a realizar un análisis más sólido y a identificar con mayor claridad los aspectos que requieren atención.</p>
 				</div>
 				<div class="territorial-grafico">
 					<h3 class="h6">Histograma: distribución de resultados</h3>
 					<p class="territorial-lectura" id="histograma-nota"></p>
 					<canvas id="grafico-histograma" role="img" aria-label="Histograma de resultados del indicador seleccionado"></canvas>
+					<p class="territorial-interpretacion" id="histograma-interpretacion"><strong>Interpretación:</strong> la distribución de los resultados de pH se concentra dentro de un rango habitual, aunque hay mediciones por encima y por debajo del promedio. Los valores más altos indican menor acidez o mayor alcalinidad; los más bajos pueden asociarse con mayor acidez.</p>
 				</div>
 			</div>
 		</section>
@@ -192,7 +193,7 @@
 		{% endif %}
 		<section class="territorial-tarjeta" aria-labelledby="territorial-caracteristicas">
 			<h2 id="territorial-caracteristicas">Diferencias en las características medidas</h2>
-			{% if indicador_seleccionado and comparacion_unidades_compatible and comparacion_resultados.mayor %}
+			{% if indicador_seleccionado and comparacion_unidades_compatible and total_territorios > 1 and comparacion_resultados.mayor and comparacion_resultados.mayor.valor != comparacion_resultados.menor.valor %}
 				<p class="territorial-subtitulo">
 					Para <strong>{{ indicador_seleccionado }}</strong>{% if unidad %} ({{ unidad }}){% endif %},
 					el promedio más alto está en <strong>{{ comparacion_resultados.mayor.territorio }}</strong>
@@ -247,6 +248,65 @@
 		{% if territorio_seleccionado %}
 		</details>
 		{% endif %}
+
+		<section class="territorial-tarjeta territorial-tarjeta-hallazgo" aria-labelledby="territorial-conocimientos-titulo">
+			<h2 id="territorial-conocimientos-titulo">Conocimientos evidentes</h2>
+			<article class="territorial-conocimiento">
+				<h3>Conocimiento 1: La cantidad de mediciones varía entre territorios</h3>
+				<dl>
+					<dt>Pregunta</dt>
+					<dd>¿Cómo se distribuyen los registros entre los territorios?</dd>
+					<dt>Variables</dt>
+					<dd>{{ nivel_seleccionado }}, cantidad de registros{% if indicador_seleccionado %} y {{ indicador_seleccionado }}{% endif %}.</dd>
+					<dt>Procedimiento</dt>
+					<dd>Se contaron los registros por {{ nivel_seleccionado|lower }} y se calculó qué porcentaje representan del total analizado.</dd>
+					<dt>Evidencia</dt>
+					<dd>{{ mayor.territorio }} presenta {{ "{:,}".format(mayor.registros).replace(",", ".") }} registros ({{ "%.2f"|format(mayor.participacion) }}%); {{ menor.territorio }} presenta {{ "{:,}".format(menor.registros).replace(",", ".") }} ({{ "%.2f"|format(menor.participacion) }}%).</dd>
+					<dt>Hallazgo</dt>
+					<dd>La cantidad de registros no es igual en todos los territorios: {{ mayor.territorio }} tiene la mayor cantidad y {{ menor.territorio }} la menor.</dd>
+					<dt>Interpretación</dt>
+					<dd>La diferencia refleja cómo está distribuida la información y la cobertura del monitoreo territorial.</dd>
+					<dt>Utilidad</dt>
+					<dd>Ayuda a identificar territorios con poca información y orientar dónde fortalecer la recolección de muestras.</dd>
+					<dt>Limitación</dt>
+					<dd>Un mayor número de registros no significa, por sí solo, mejor o peor calidad del agua; también puede deberse a que allí se realizaron más mediciones.</dd>
+				</dl>
+			</article>
+
+			{% if indicador_seleccionado and comparacion_unidades_compatible and comparacion_resultados.mayor %}
+			<article class="territorial-conocimiento">
+				<h3>Conocimiento 2: El resultado de {{ indicador_seleccionado }} difiere entre territorios</h3>
+				<dl>
+					<dt>Pregunta</dt>
+					<dd>¿En qué territorios se observan los promedios más alto y más bajo para el indicador seleccionado?</dd>
+					<dt>Variables</dt>
+					<dd>{{ nivel_seleccionado }}, {{ indicador_seleccionado }}, resultado{% if unidad %} ({{ unidad }}){% endif %}.</dd>
+					<dt>Procedimiento</dt>
+					<dd>Se agruparon los resultados numéricos del indicador por territorio y se compararon sus promedios.</dd>
+					<dt>Evidencia</dt>
+					<dd>El promedio más alto se observa en {{ comparacion_resultados.mayor.territorio }} ({{ "%.3f"|format(comparacion_resultados.mayor.valor) }}{% if unidad %} {{ unidad }}{% endif %}) y el más bajo en {{ comparacion_resultados.menor.territorio }} ({{ "%.3f"|format(comparacion_resultados.menor.valor) }}{% if unidad %} {{ unidad }}{% endif %}).</dd>
+					<dt>Hallazgo</dt>
+					<dd>Los promedios del indicador seleccionado no son iguales entre los territorios analizados.</dd>
+					<dt>Interpretación</dt>
+					<dd>La diferencia señala una variación territorial que puede revisarse con los datos de cada punto de monitoreo.</dd>
+					<dt>Utilidad</dt>
+					<dd>Permite priorizar la revisión de los territorios con valores que ameriten seguimiento.</dd>
+					<dt>Limitación</dt>
+					<dd>El promedio resume las mediciones disponibles y no demuestra que el territorio sea la causa de la diferencia.</dd>
+				</dl>
+			</article>
+			{% endif %}
+		</section>
+
+		<section class="territorial-tarjeta territorial-tarjeta-hallazgo" aria-labelledby="territorial-limitacion-titulo">
+			<h2 id="territorial-limitacion-titulo">Limitación del análisis</h2>
+			<p class="territorial-lectura">Un territorio con más registros puede tener más puntos de monitoreo, no necesariamente una condición distinta del agua. Los gráficos describen los datos disponibles, pero no explican las causas de las diferencias.</p>
+		</section>
+
+		<section class="territorial-tarjeta territorial-tarjeta-hallazgo" aria-labelledby="territorial-decision-titulo">
+			<h2 id="territorial-decision-titulo">Posible decisión sustentada en los datos</h2>
+			<p class="territorial-lectura">Fortalecer el monitoreo en los territorios con pocos registros y revisar con más detalle aquellos donde los resultados del indicador seleccionado se concentran en rangos que requieren atención.</p>
+		</section>
 	</div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
@@ -392,6 +452,14 @@
 			graficos.histograma.update();
 
 			const nota = document.getElementById("histograma-nota");
+			const interpretacion = document.getElementById("histograma-interpretacion");
+			if (indicadorHistograma.toLocaleLowerCase("es").includes("ph")) {
+				interpretacion.innerHTML =
+					"<strong>Interpretación:</strong> los resultados de pH se concentran dentro de un rango habitual, aunque hay mediciones por encima y por debajo del promedio. Los valores más altos indican menor acidez o mayor alcalinidad; los más bajos pueden asociarse con mayor acidez.";
+			} else {
+				interpretacion.innerHTML =
+					"<strong>Interpretación:</strong> la distribución muestra los rangos donde se agrupan más resultados del indicador seleccionado. Los valores repartidos entre varios rangos reflejan variación entre las mediciones.";
+			}
 			if (unidades.length > 1) {
 				nota.textContent = `No se mezclan resultados de ${indicadorHistograma}: hay varias unidades.`;
 			} else if (!valores.length) {
