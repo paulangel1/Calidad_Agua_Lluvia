@@ -484,6 +484,45 @@ button:focus-visible {
 	box-shadow: 0 6px 20px rgb(23 107 85 / 6%);
 }
 
+.territorial-tarjeta-hallazgo {
+	border-color: rgb(0 169 157 / 16%);
+	background: linear-gradient(
+		120deg,
+		rgb(121 192 0 / 8%),
+		rgb(0 169 157 / 7%)
+	);
+}
+
+.territorial-conocimiento {
+	margin-top: 1rem;
+	padding: 1rem 1.25rem;
+	border: 1px solid var(--territorial-borde);
+	border-radius: 0.65rem;
+	background: rgb(255 255 255 / 78%);
+}
+
+.territorial-conocimiento h3 {
+	margin: 0 0 0.75rem;
+	color: var(--territorial-verde-oscuro);
+	font-size: 1.08rem;
+}
+
+.territorial-conocimiento dl {
+	display: grid;
+	grid-template-columns: minmax(110px, 145px) minmax(0, 1fr);
+	gap: 0.45rem 1rem;
+	margin: 0;
+}
+
+.territorial-conocimiento dt {
+	color: var(--territorial-verde);
+	font-weight: 600;
+}
+
+.territorial-conocimiento dd {
+	margin: 0;
+}
+
 .territorial-filtros h2,
 .territorial-tarjeta h2 {
 	margin: 0 0 0.3rem;
@@ -494,6 +533,11 @@ button:focus-visible {
 .territorial-subtitulo {
 	margin-bottom: 1rem;
 	color: var(--territorial-suave);
+}
+
+.territorial-descripcion {
+	margin: 1.25rem 0 0;
+	color: var(--territorial-texto);
 }
 
 .territorial-controles {
@@ -699,6 +743,16 @@ button:focus-visible {
 	color: var(--territorial-suave);
 }
 
+.territorial-interpretacion {
+	margin: 1rem 0 0;
+	padding: 0.8rem 1rem;
+	border-left: 4px solid #d29a25;
+	border-radius: 0.4rem;
+	background: #fff7df;
+	color: #543d10;
+	line-height: 1.6;
+}
+
 .territorial-vacio {
 	padding: 2rem;
 	color: var(--territorial-suave);
@@ -752,20 +806,34 @@ button:focus-visible {
 
 .territorial-graficos {
 	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
-	gap: 1.25rem;
+	grid-template-columns: 1fr;
+	gap: 1rem;
 }
 
 .territorial-grafico {
 	position: relative;
-	min-height: 320px;
+	padding: 1rem;
+	border: 1px solid var(--territorial-borde);
+	border-radius: 0.75rem;
+	background: #fff;
 }
 
 .territorial-grafico canvas {
+	width: 100%;
+	height: 280px;
 	max-height: 300px;
 }
 
 @media (max-width: 767.98px) {
+	.territorial-conocimiento dl {
+		grid-template-columns: 1fr;
+		gap: 0.15rem;
+	}
+
+	.territorial-conocimiento dd {
+		margin-bottom: 0.45rem;
+	}
+
 	.territorial-grid {
 		grid-template-columns: 1fr;
 	}
